@@ -1,0 +1,431 @@
+:root {
+    /* Reusing variables from Login.css for consistency */
+    --primary-orange: #FF4500;
+    --primary-hover: #e03e00;
+    --dark-bg: #0a0a0a;
+    /* Deep black background */
+    --card-bg: #141414;
+    /* Slightly lighter for cards */
+    --card-gradient: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+    --text-white: #ffffff;
+    --text-grey: #a1a1a1;
+    --sidebar-width: 100px;
+}
+
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    /* Add this line to force full viewport width */
+    background-color: var(--dark-bg);
+    color: var(--text-white);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #1a100e 0%, #000000 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 0;
+    border-right: 1px solid #222;
+    z-index: 10;
+}
+
+.brand-icon {
+    font-size: 1.8rem;
+    color: var(--primary-orange);
+    margin-bottom: 3rem;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    align-items: center;
+}
+
+.menu-item {
+    font-size: 1.4rem;
+    color: var(--text-grey);
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    color: var(--primary-orange);
+    background-color: rgba(255, 69, 0, 0.1);
+}
+
+.logout-wrapper {
+    margin-top: auto;
+    margin-bottom: 1rem;
+}
+
+
+/* --- MAIN CONTENT AREA --- */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background: radial-gradient(circle at top right, #2e120b, #0a0a0a 40%);
+}
+
+/* Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header-title h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.search-bar {
+    background-color: var(--card-bg);
+    border: 1px solid #333;
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: var(--text-grey);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: var(--text-white);
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--primary-orange);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    border: 2px solid #333;
+}
+
+
+/* --- DASHBOARD GRID LAYOUT --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    /* Main content takes 3 parts, right widgets take 1 */
+    gap: 25px;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Top Section (Overview + Activities) */
+.top-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+/* Common Card Style */
+.dash-card {
+    background: var(--card-gradient);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    border: 1px solid #222;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Overview Card (Large Chart) */
+.overview-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Placeholder for Chart */
+.chart-placeholder {
+    height: 150px;
+    background: linear-gradient(90deg, rgba(255, 69, 0, 0.1), rgba(255, 69, 0, 0.3));
+    border-radius: 15px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding-bottom: 10px;
+    position: relative;
+}
+
+.chart-bar {
+    width: 8px;
+    background: var(--primary-orange);
+    border-radius: 5px;
+    opacity: 0.7;
+}
+
+.chart-wave {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    opacity: 0.4;
+}
+
+.overview-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.stat-item h3 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.stat-item p {
+    color: var(--text-grey);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Activity Cards (Small Top Right) */
+.activity-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.activity-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.activity-card.orange {
+    background: linear-gradient(135deg, #ff5f2e, #c73600);
+}
+
+.act-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+/* Bottom Section (Progress Cards) */
+.bottom-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.progress-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.prog-header {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 1.5rem;
+}
+
+.prog-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.prog-info p {
+    margin: 5px 0 0;
+    color: var(--text-grey);
+    font-size: 0.8rem;
+}
+
+.progress-bar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-orange);
+    border-radius: 10px;
+}
+
+.prog-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 0.8rem;
+    color: var(--text-grey);
+}
+
+.days-left {
+    background: rgba(255, 69, 0, 0.2);
+    color: var(--primary-orange);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* --- RIGHT PANEL (WIDGETS) --- */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 1rem;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.friend-info h5 {
+    margin: 0;
+}
+
+.friend-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-grey);
+}
+
+.map-placeholder {
+    height: 180px;
+    background: #222;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-grey);
+    position: relative;
+    overflow: hidden;
+}
+
+.map-pin {
+    position: absolute;
+    color: var(--primary-orange);
+    font-size: 1.5rem;
+}
+
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .right-panel {
+        display: none;
+        /* Hide right panel on medium screens for MVP */
+    }
+}
+
+@media (max-width: 900px) {
+    .top-section {
+        grid-template-columns: 1fr;
+    }
+
+    .bottom-section {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        padding: 1rem;
+        justify-content: space-around;
+    }
+
+    .brand-icon {
+        display: none;
+    }
+
+    .menu-list {
+        flex-direction: row;
+        width: auto;
+        gap: 1rem;
+    }
+
+    .logout-wrapper {
+        margin: 0;
+    }
+
+    .main-content {
+        overflow-y: visible;
+    }
+}
