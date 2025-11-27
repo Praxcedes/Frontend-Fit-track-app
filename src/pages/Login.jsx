@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext'; // Import Context
 import api from '../services/api'; // Direct API access for signup
 
-import '../styles/Login.css';
+import "../styles/Login.css"; // OK
+
 
 // Import Images
 import heroImage from '../assets/Running.jpg';
