@@ -14,7 +14,7 @@ import WorkoutDetail from './pages/WorkoutDetail';
 // Signup import removed since it is handled inside Login.jsx
 
 // Styles
-import './styles/Login.css'; // Your Login styles
+import './styles/login.css'; // Your Login styles
 // import './styles/main.css'; // Global styles
 
 // This component handles hiding the Navbar on the Login page AND Dashboard
