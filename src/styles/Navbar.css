@@ -1,0 +1,420 @@
+/* src/styles/Navbar.css */
+:root {
+    --primary-orange: #FF4500;
+    --navbar-bg: rgba(15, 15, 15, 0.65);
+    /* More transparent for glass effect */
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    --glass-blur: blur(12px);
+}
+
+/* --- TOP NAVBAR (Identity) --- */
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Use left/right: 0 instead of width: 100% for fixed elements */
+    height: 80px;
+    background: var(--navbar-bg);
+    border-bottom: var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    z-index: 1000;
+    box-sizing: border-box;
+    /* Explicit safety */
+}
+
+/* Centered Logo Logic */
+.nav-logo-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-orange);
+    text-decoration: none;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+}
+
+/* Right Side: Avatar & Name */
+.nav-avatar-section {
+    margin-left: auto;
+    /* Pushes it to the far right */
+    display: flex;
+    flex-direction: column;
+    /* Stack vertically */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    min-width: 60px;
+}
+
+.nav-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--primary-orange);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.4);
+    flex-shrink: 0;
+    /* Prevents squishing */
+    transition: transform 0.2s;
+}
+
+.nav-username {
+    font-size: 0.75rem;
+    color: #a1a1a1;
+    margin-top: 4px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.nav-avatar-section:hover .nav-avatar {
+    transform: scale(1.1);
+    border-color: white;
+}
+
+.nav-avatar-section:hover .nav-username {
+    color: white;
+}
+
+
+/* --- BOTTOM NAVBAR (Navigation & Utilities) --- */
+.bottom-navbar {
+    position: fixed;
+    bottom: 20px;
+    /* Floating slightly above bottom looks nice with glass */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    /* Floating width */
+    max-width: 800px;
+    height: 75px;
+
+    background: var(--navbar-bg);
+    border: var(--glass-border);
+    border-radius: 50px;
+    /* Pill shape */
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: var(--glass-shadow);
+
+    display: flex;
+    justify-content: center;
+    /* CENTER EVERYTHING */
+    align-items: center;
+    padding: 0 20px;
+    gap: 20px;
+    /* Space between the two groups */
+    z-index: 1000;
+}
+
+/* Navigation Links Group */
+.bottom-nav-links {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.nav-item svg {
+    font-size: 1.3rem;
+    margin-bottom: 2px;
+}
+
+.nav-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+    color: var(--primary-orange);
+    background: rgba(255, 69, 0, 0.15);
+    box-shadow: 0 0 15px rgba(255, 69, 0, 0.1);
+}
+
+/* Divider between Nav and Utils */
+.nav-divider {
+    width: 1px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Utilities Group */
+.bottom-utilities {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.utility-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #aaa;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    /* Circles looks better in pill dock */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.utility-btn:hover {
+    border-color: var(--primary-orange);
+    color: white;
+    background: rgba(255, 69, 0, 0.1);
+}
+
+.utility-btn.water {
+    color: #00bfff;
+}
+
+.utility-btn.logout {
+    color: #ff4d4d;
+    border-color: rgba(255, 77, 77, 0.2);
+}
+
+.utility-btn.logout:hover {
+    background: rgba(255, 77, 77, 0.2);
+}
+
+.badge-counter {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--primary-orange);
+    color: white;
+    font-size: 0.6rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    border: 1px solid #000;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .bottom-navbar {
+        width: 100%;
+        bottom: 0;
+        border-radius: 0;
+        border-top: var(--glass-border);
+        border-bottom: none;
+        border-left: none;
+        border-right: none;
+        height: 70px;
+        justify-content: space-around;
+        gap: 5px;
+    }
+
+    .nav-item span {
+        display: none;
+    }
+
+    /* Icons only */
+    .nav-divider {
+        display: none;
+    }
+
+    .nav-logo span {
+        display: none;
+    }
+
+    /* Icon only on mobile top */
+}
+
+/* --- SHARED MODAL STYLES --- */
+.nav-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    /* Above everything */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.nav-modal-content {
+    background: #141414;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 90%;
+    max-width: 350px;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    position: relative;
+    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.nav-close-btn {
+    background: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 5px;
+}
+
+.nav-close-btn:hover {
+    color: white;
+}
+
+/* Profile Specifics */
+.modal-avatar-large {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-orange);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    border: 3px solid #1a1a1a;
+    box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
+}
+
+.modal-user-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.modal-user-info p {
+    color: #888;
+    margin: 5px 0 20px;
+    font-size: 0.9rem;
+}
+
+.btn-modal-action {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: var(--primary-orange);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #e03e00;
+}
+
+/* Input for Logging */
+.modal-input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.modal-input-group label {
+    display: block;
+    color: #888;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+}
+
+.modal-input {
+    width: 100%;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    padding: 12px;
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+
+.modal-input:focus {
+    border-color: var(--primary-orange);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

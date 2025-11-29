@@ -1,29 +1,34 @@
 /* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+/* --- 1. GLOBAL BOX SIZING RESET (Crucial Fix) --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  /* Reset colors to dark mode default */
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #000000;
-  /* Force black background globally */
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* CRITICAL: This fixes the full width issue */
 body {
   margin: 0;
   padding: 0;
-  min-width: 100vw;
+  width: 100%;
+  /* Changed from min-width: 100vw to avoid scrollbar issues */
   min-height: 100vh;
-  display: block;
-  /* Sometimes it defaults to flex */
+  overflow-x: hidden;
+  /* Prevents horizontal scroll if something slips */
 }
 
 #root {
@@ -32,7 +37,12 @@ body {
   margin: 0;
   padding: 0;
   max-width: none;
-  /* Removes the 1280px limit */
   text-align: left;
-  /* Removes text centering */
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }

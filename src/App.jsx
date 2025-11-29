@@ -1,60 +1,93 @@
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { UserProvider } from './context/UserContext'; // Import the Provider
+import { UserProvider } from './context/UserContext';
 
 // Components
-import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute'; // <-- IMPORTED NEW COMPONENT
+import TopNavbar from './components/TopNavbar';
+import BottomNavbar from './components/BottomNavbar';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Workouts from './pages/Workouts';
-import WorkoutDetail from './pages/WorkoutDetail';
-// Signup import removed since it is handled inside Login.jsx
+import ActiveSession from './pages/ActiveSession'; // <--- NEW IMPORT
+import MyWorkouts from './pages/MyWorkouts';
+import Friends from './pages/Friends';
+import Settings from './pages/Settings';
 
 // Styles
-import "./styles/Login.css"; // OK
-// import './styles/main.css'; // Global styles
+import "./styles/Login.css";
 
-// This component handles hiding the Navbar on the Login page AND Dashboard
 const Layout = ({ children }) => {
     const location = useLocation();
 
-    // Hide Navbar on the root path "/" (Login page) AND "/dashboard" (It has its own Sidebar)
-    const showNavbar = location.pathname !== '/' && location.pathname !== '/dashboard';
+    // LOGIC: Hide Navbars on Login ("/") AND Active Session ("/session/...")
+    // This creates "Focus Mode" for the actual workout
+    const isSession = location.pathname.startsWith('/session');
+    const isLogin = location.pathname === '/';
+
+    const showNavs = !isLogin && !isSession;
 
     return (
         <>
-            {showNavbar && <Navbar />}
-            <div className="app-content">
+            {showNavs && <TopNavbar />}
+            {/* Add 'no-padding' class if in session to remove the top/bottom spacing */}
+            <div className={`app-content ${isSession ? 'no-padding' : ''}`}>
                 {children}
             </div>
+            {showNavs && <BottomNavbar />}
         </>
     );
 };
 
 function App() {
     return (
-        <UserProvider> {/* Wrap everything in UserProvider for Global State */}
+        <UserProvider>
             <Router>
                 <Layout>
                     <Routes>
-                        {/* Public Route (Login & Signup Toggle) */}
+                        {/* Public Route */}
                         <Route path="/" element={<Login />} />
 
-                        {/* Protected Routes (NOW SECURED BY PROTECTEDROUTE) */}
+                        {/* Protected Routes */}
                         <Route
                             path="/dashboard"
                             element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
                         />
+
+                        {/* Browsing Workouts */}
                         <Route
                             path="/workouts"
                             element={<ProtectedRoute><Workouts /></ProtectedRoute>}
                         />
+
+                        {/* Fallback for the detail view if user manually types url (optional) */}
                         <Route
                             path="/workouts/:id"
-                            element={<ProtectedRoute><WorkoutDetail /></ProtectedRoute>}
+                            element={<ProtectedRoute><Workouts /></ProtectedRoute>}
+                        />
+
+                        {/* --- NEW: ACTIVE WORKOUT SESSION --- */}
+                        <Route
+                            path="/session/:id"
+                            element={<ProtectedRoute><ActiveSession /></ProtectedRoute>}
+                        />
+
+                        <Route
+                            path="/my-workouts"
+                            element={<ProtectedRoute><MyWorkouts /></ProtectedRoute>}
+                        />
+
+                        <Route
+                            path="/friends"
+                            element={<ProtectedRoute><Friends /></ProtectedRoute>}
+                        />
+
+                        <Route
+                            path="/settings"
+                            element={<ProtectedRoute><Settings /></ProtectedRoute>}
                         />
                     </Routes>
                 </Layout>
