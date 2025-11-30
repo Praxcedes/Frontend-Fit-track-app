@@ -1,4 +1,3 @@
-// src/components/BottomNavbar.jsx
 import React, { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';

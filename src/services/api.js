@@ -1,8 +1,8 @@
-// src/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:5555', // Hardcoded to match your Flask server
+    // UPDATE: Pointing to deployed Render Backend
+    baseURL: 'https://fittrack-api.onrender.com',
     headers: {
         'Content-Type': 'application/json',
     },

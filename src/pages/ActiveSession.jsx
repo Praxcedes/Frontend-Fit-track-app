@@ -1,4 +1,3 @@
-// src/pages/ActiveSession.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api'; // <--- ADDED: API import for posting data

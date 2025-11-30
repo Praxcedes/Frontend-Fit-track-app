@@ -1,10 +1,9 @@
-// src/pages/Friends.jsx
 import React, { useState, useEffect } from 'react';
 import api from '../services/api'; // ADDED: API import for friend management
 import { FaUserPlus, FaUsers, FaTrophy, FaFire, FaCamera, FaCheck, FaTimes, FaComment, FaDumbbell } from 'react-icons/fa';
 import '../styles/Dashboard.css';
 import '../styles/Friends.css';
-import MapComponent from '../components/MapComponent'; // <--- NEW IMPORT
+import MapComponent from '../components/MapComponent';
 
 // --- MOCK DATA (Temporary) ---
 const MOCK_FRIENDS = [
