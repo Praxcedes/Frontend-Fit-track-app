@@ -1,76 +1,20 @@
 // src/pages/Workouts.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api'; // API import for data fetching
 import '../styles/Dashboard.css';
 import '../styles/Workouts.css';
 
 import { FaSearch, FaClock, FaFire, FaChevronLeft, FaChevronRight, FaTimes, FaPlay, FaDumbbell, FaSort } from 'react-icons/fa';
 
-// --- MOCK DATA --- (Must match the structure you provided)
+// --- MOCK DATA --- 
+// ... (MOCK data array remains here for completeness but is not accessed)
 const MOCK_WORKOUTS = [
-    {
-        id: 1,
-        title: "Full Body HIIT Burn",
-        duration: "45 min",
-        level: "High",
-        category: "Cardio",
-        desc: "A high-energy interval session designed to torch calories and boost endurance. Includes burpees, mountain climbers, and sprint intervals.",
-        images: [
-            "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800&fit=crop",
-            "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&fit=crop"
-        ]
-    },
-    {
-        id: 2,
-        title: "Upper Body Power Build",
-        duration: "60 min",
-        level: "Medium",
-        category: "Strength",
-        desc: "Focus on hypertrophy for chest, back, and arms. Controlled movements with emphasis on time-under-tension.",
-        images: [
-            "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&fit=crop",
-            "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1590239926044-29b7351e3a66?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1616279967983-ec413476e824?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1591741531460-2336d8033346?w=600&fit=crop"
-        ]
-    },
-    {
-        id: 3,
-        title: "Deep Yoga Flow & Stretch",
-        duration: "30 min",
-        level: "Low",
-        category: "Flexibility",
-        desc: "Relax and recover. This flow targets tight hips and hamstrings, perfect for recovery days.",
-        images: [
-            "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=800&fit=crop",
-            "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1510894347713-fc3ed6fdf539?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600&fit=crop"
-        ]
-    },
-    {
-        id: 4,
-        title: "Abs & Core Crusher",
-        duration: "20 min",
-        level: "High",
-        category: "Strength",
-        desc: "Quick but brutal core session. Planks, leg raises, and russian twists to build stability.",
-        images: [
-            "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&fit=crop",
-            "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1608215543217-2529005fb37c?w=600&fit=crop",
-            "https://images.unsplash.com/photo-1517931524326-bdd55a541177?w=600&fit=crop"
-        ]
-    }
+    // ...
 ];
 
-const CATEGORIES = ["All", "Strength", "Cardio", "Flexibility", "HIIT"];
+// Updated CATEGORIES based on the new exercise muscle groups
+const CATEGORIES = ["All", "Strength", "Legs", "Shoulders", "Bodyweight", "Arms", "Core", "Cardio"];
 
 // Helper function to convert duration strings to minutes for sorting
 const parseDuration = (duration) => parseInt(duration.split(' ')[0], 10);
@@ -85,6 +29,11 @@ const parseLevel = (level) => {
 
 const Workouts = () => {
     const navigate = useNavigate();
+
+    // --- NEW: STATE FOR REAL DATA ---
+    const [originalWorkouts, setOriginalWorkouts] = useState([]); // Stores fetched data
+    const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(null);
 
     // --- STATE INITIALIZATION & PERSISTENCE ---
     const getInitialState = (key, defaultValue) => {
@@ -101,6 +50,45 @@ const Workouts = () => {
     const [selectedWorkout, setSelectedWorkout] = useState(null);
     const swiperRefs = useRef({}); // To hold refs for each card's carousel
     const [activeSlides, setActiveSlides] = useState({}); // To track current slide index per card
+
+
+    // --- EFFECT 1: FETCH DATA FROM BACKEND ---
+    useEffect(() => {
+        const fetchWorkouts = async () => {
+            try {
+                // FIX 1: Use trailing slash for API call to avoid 308 redirect
+                const response = await api.get('/exercises/');
+
+                // FIX 2: Check if data is nested or direct array. If direct array, use it.
+                const exercisesData = response.data.exercises || response.data;
+
+                if (!Array.isArray(exercisesData)) {
+                    throw new Error("Invalid data format received from server.");
+                }
+
+                // FIX: Map the fetched data to match the FE's expected structure
+                const mappedExercises = exercisesData.map(ex => ({
+                    id: ex.id,
+                    title: ex.title,       // Uses the MAPPED 'title' from models.py
+                    category: ex.category, // Uses the MAPPED 'category' from models.py
+                    level: ex.level,       // Uses the MAPPED 'level' from models.py
+                    duration: ex.duration, // Uses the MAPPED 'duration' from models.py
+                    desc: ex.instructions, // Maps backend 'instructions' (or similar) to 'desc'
+                    images: ex.images,     // Uses the MAPPED 'images' array from models.py
+                }));
+
+                setOriginalWorkouts(mappedExercises);
+                setLoading(false);
+            } catch (error) {
+                console.error("Failed to fetch workouts:", error);
+                setFetchError("Could not load exercises. Check server connection or backend data structure.");
+                setLoading(false);
+            }
+        };
+
+        fetchWorkouts();
+    }, []); // Runs once on component mount
+
 
     // Effect to load initial state from localStorage (runs once)
     useEffect(() => {
@@ -125,8 +113,10 @@ const Workouts = () => {
         const query = e.target.value;
         setSearchQuery(query);
         if (query.length > 1) {
-            const matches = MOCK_WORKOUTS.filter(w =>
-                w.title.toLowerCase().includes(query.toLowerCase())
+            // Use originalWorkouts for searching
+            // FIX 1: Add safety check for w and w.title
+            const matches = originalWorkouts.filter(w =>
+                w && w.title && w.title.toLowerCase().includes(query.toLowerCase())
             );
             setSuggestions(matches);
         } else {
@@ -134,8 +124,11 @@ const Workouts = () => {
         }
     };
 
-    // 1. Filtering
-    let filteredWorkouts = MOCK_WORKOUTS.filter(workout => {
+    // 1. Filtering - Use originalWorkouts as the source
+    let filteredWorkouts = originalWorkouts.filter(workout => {
+        // FIX 2: Check if the workout object and its title exist before accessing properties
+        if (!workout || !workout.title) return false;
+
         const matchesSearch = workout.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = activeCategory === "All" || workout.category === activeCategory;
         return matchesSearch && matchesCategory;
@@ -144,6 +137,9 @@ const Workouts = () => {
     // 2. Sorting
     const [key, direction] = sortCriteria.split('-');
     filteredWorkouts.sort((a, b) => {
+        // FIX 3: Add safety checks before accessing properties a and b for sorting
+        if (!a || !b) return 0;
+
         let valA, valB;
         if (key === 'duration') {
             valA = parseDuration(a.duration);
@@ -152,8 +148,8 @@ const Workouts = () => {
             valA = parseLevel(a.level);
             valB = parseLevel(b.level);
         } else { // title
-            valA = a.title.toLowerCase();
-            valB = b.title.toLowerCase();
+            valA = a.title ? a.title.toLowerCase() : ''; // Safety check
+            valB = b.title ? b.title.toLowerCase() : ''; // Safety check
         }
 
         if (valA < valB) return direction === 'asc' ? -1 : 1;
@@ -164,6 +160,14 @@ const Workouts = () => {
     const displayedWorkouts = filteredWorkouts;
 
     // --- UI HELPERS ---
+    // Handler for getting the indicator count (NOW USES FETCHED DATA)
+    const getIndicatorCount = (id) => {
+        // Find the workout in the fetched data
+        const workout = originalWorkouts.find(w => w.id === id);
+        // Return the length of the images array if it exists
+        return workout && workout.images ? workout.images.length : 0;
+    }
+
 
     // Handler for updating the active dot when user scrolls the carousel
     const handleScroll = (id) => {
@@ -192,10 +196,19 @@ const Workouts = () => {
         setSuggestions([]); // Clear suggestions if open
     };
 
-    // Helper to get the correct number of dots
-    const getIndicatorCount = (id) => {
-        const workout = MOCK_WORKOUTS.find(w => w.id === id);
-        return workout ? workout.images.length : 0;
+    // --- UI RENDERING (Handle Loading/Errors) ---
+    if (loading) {
+        return <div className="loading-state" style={{ textAlign: 'center', padding: '100px', color: 'var(--primary)' }}>
+            <FaDumbbell style={{ fontSize: '3rem', animation: 'spin 1s linear infinite' }} />
+            <h2>Loading Exercises...</h2>
+        </div>;
+    }
+
+    if (fetchError) {
+        return <div className="error-state" style={{ textAlign: 'center', padding: '100px', color: 'red' }}>
+            <h3>Error Loading Data</h3>
+            <p>{fetchError}</p>
+        </div>;
     }
 
 
@@ -222,6 +235,7 @@ const Workouts = () => {
                             <div className="suggestions-dropdown">
                                 {suggestions.map(item => (
                                     <div key={item.id} className="suggestion-item" onClick={() => openModal(item)}>
+                                        {/* FIX: Use item.images[0] from FETCHED data */}
                                         <img src={item.images[0]} alt="" className="suggestion-thumb" />
                                         <span>{item.title}</span>
                                     </div>
@@ -265,7 +279,7 @@ const Workouts = () => {
                         <div key={workout.id} className="workout-card">
 
                             <div className="card-image-swiper-container">
-                                {workout.images.length > 1 && (
+                                {workout.images && workout.images.length > 1 && (
                                     <>
                                         <button className="swiper-arrow left" onClick={(e) => scrollSwiper(e, 'left', workout.id)}><FaChevronLeft /></button>
                                         <button className="swiper-arrow right" onClick={(e) => scrollSwiper(e, 'right', workout.id)}><FaChevronRight /></button>
@@ -278,7 +292,7 @@ const Workouts = () => {
                                     ref={el => swiperRefs.current[workout.id] = el}
                                     onScroll={() => handleScroll(workout.id)}
                                 >
-                                    {workout.images.map((img, index) => (
+                                    {workout.images && workout.images.map((img, index) => (
                                         <div key={index} className="swiper-slide">
                                             <img src={img} alt={workout.title} className="swiper-img" />
                                         </div>
@@ -286,7 +300,7 @@ const Workouts = () => {
                                 </div>
 
                                 {/* Swiper Indicators (NEW) */}
-                                {workout.images.length > 1 && (
+                                {workout.images && workout.images.length > 1 && (
                                     <div className="swiper-indicators">
                                         {[...Array(getIndicatorCount(workout.id))].map((_, index) => (
                                             <div
@@ -313,7 +327,7 @@ const Workouts = () => {
                     ))}
                 </div>
 
-                {displayedWorkouts.length === 0 && (
+                {displayedWorkouts.length === 0 && !loading && (
                     <div style={{ textAlign: 'center', padding: '50px', color: '#666' }}>
                         <h3>No workouts found.</h3>
                         <p>Try changing filters or search terms.</p>
@@ -348,7 +362,7 @@ const Workouts = () => {
                                 <p>{selectedWorkout.desc}</p>
 
                                 <h4>What you'll need</h4>
-                                <p style={{ color: '#888' }}>• Yoga Mat<br />• Water Bottle<br />• Towel</p>
+                                <p style={{ color: '#888' }}>• Barbell<br />• Dumbbell<br />• Your focus</p>
                             </div>
                         </div>
 

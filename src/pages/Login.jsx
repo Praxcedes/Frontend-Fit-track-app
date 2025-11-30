@@ -1,12 +1,11 @@
+// src/pages/Login.jsx
 import React, { useState, useContext } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/UserContext'; // Import Context
-import api from '../services/api'; // Direct API access for signup
+import { UserContext } from '../context/UserContext';
 
-import "../styles/Login.css"; // OK
-
+import "../styles/Login.css";
 
 // Import Images
 import heroImage from '../assets/Running.jpg';
@@ -14,7 +13,8 @@ import formBgImage from '../assets/gym.jpg';
 
 // Validation Schemas
 const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Email is required'),
+    // FIX 1: Change validation to simply require a string, not an email format
+    email: Yup.string().required('Username is required'),
     password: Yup.string().required('Password is required'),
 });
 
@@ -29,28 +29,25 @@ const SignupSchema = Yup.object().shape({
 
 const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
-    const [serverError, setServerError] = useState(''); // To show "Invalid Password" etc.
+    const [serverError, setServerError] = useState('');
 
     const navigate = useNavigate();
-    const { login, setUser } = useContext(UserContext); // 2. Get helpers from Context
+    const { login, signup } = useContext(UserContext);
 
     // --- LOGIN LOGIC ---
     const handleLoginSubmit = async (values, { setSubmitting }) => {
         try {
-            setServerError(''); // Clear previous errors
+            setServerError('');
+            // NOTE: The 'values.email' field contains the Username input value
+            const result = await login(values.email, values.password);
 
-            // ------------------------------------------------------------------
-            // --- TEMP BYPASS: Simulate successful login 🚀 ---
-            await new Promise(resolve => setTimeout(resolve, 500));
-            setUser({ id: 1, username: 'TestUser', email: values.email });
-            // ------------------------------------------------------------------
-
-            // await login(values.email, values.password); // <-- UNCOMMENT THIS LINE FOR REAL BACKEND
-
-            navigate('/dashboard');
+            if (result.success) {
+                navigate('/dashboard');
+            } else {
+                setServerError(result.message);
+            }
         } catch (error) {
-            // If backend returns 401/400, show it
-            setServerError(error.response?.data?.message || "Invalid email or password");
+            setServerError("An unexpected error occurred. Please try again.");
         } finally {
             setSubmitting(false);
         }
@@ -60,28 +57,15 @@ const Login = () => {
     const handleSignupSubmit = async (values, { setSubmitting }) => {
         try {
             setServerError('');
+            const result = await signup(values.username, values.email, values.password);
 
-            // ------------------------------------------------------------------
-            // --- TEMP BYPASS: Simulate successful signup 🚀 ---
-            await new Promise(resolve => setTimeout(resolve, 500));
-            setUser({ id: 2, username: values.username, email: values.email });
-            // ------------------------------------------------------------------
-
-            // // 1. POST to /signup (UNCOMMENT THIS BLOCK FOR REAL BACKEND)
-            // const response = await api.post('/signup', {
-            //     username: values.username,
-            //     email: values.email,
-            //     password: values.password
-            // });
-
-            // // 2. Set the user in global state (Auto-login)
-            // setUser(response.data);
-
-            // 3. Redirect to Dashboard
-            navigate('/dashboard');
+            if (result.success) {
+                navigate('/dashboard');
+            } else {
+                setServerError(result.message);
+            }
         } catch (error) {
-            // Handle "Username taken" errors
-            setServerError(error.response?.data?.message || "Signup failed. Try again.");
+            setServerError("Signup failed. Please check your connection.");
         } finally {
             setSubmitting(false);
         }
@@ -106,7 +90,6 @@ const Login = () => {
                     <p className="hero-subtitle">
                         The distraction-free workout tracker designed for focus.
                     </p>
-                    {/* ... Features List (Same as before) ... */}
                 </div>
             </div>
 
@@ -122,16 +105,20 @@ const Login = () => {
                         {isLogin ? 'Welcome Back' : 'Create Account'}
                     </h2>
 
-                    {/* Show Server Errors (Invalid password, etc) */}
-                    {serverError && <div style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>{serverError}</div>}
+                    {/* Show Server Errors */}
+                    {serverError && <div style={{ color: '#ff4d4d', marginBottom: '1rem', textAlign: 'center', background: 'rgba(255,0,0,0.1)', padding: '10px', borderRadius: '5px' }}>{serverError}</div>}
 
                     <Formik
-                        initialValues={isLogin ?
-                            { email: '', password: '' } :
-                            { username: '', email: '', password: '', confirmPassword: '' }
-                        }
+                        // FIX: Always initialize ALL fields to empty strings to prevent "uncontrolled input" warning
+                        initialValues={{
+                            username: '',
+                            email: '',
+                            password: '',
+                            confirmPassword: ''
+                        }}
                         validationSchema={isLogin ? LoginSchema : SignupSchema}
                         onSubmit={isLogin ? handleLoginSubmit : handleSignupSubmit}
+                        enableReinitialize // Allows form to reset when switching modes
                     >
                         {({ isSubmitting }) => (
                             <Form>
@@ -143,9 +130,15 @@ const Login = () => {
                                     </div>
                                 )}
 
+                                {/* FIX 2: Change Login field UI from Email Address to Username */}
                                 <div className="form-group">
-                                    <label>Email Address</label>
-                                    <Field type="email" name="email" className="custom-input" placeholder="name@example.com" />
+                                    <label>{isLogin ? 'Username' : 'Email Address'}</label>
+                                    <Field
+                                        type={isLogin ? 'text' : 'email'}
+                                        name="email"
+                                        className="custom-input"
+                                        placeholder={isLogin ? 'Enter your username' : 'name@example.com'}
+                                    />
                                     <ErrorMessage name="email" component="div" className="error-msg" />
                                 </div>
 
@@ -164,7 +157,7 @@ const Login = () => {
                                 )}
 
                                 <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                                    {isLogin ? 'Log In' : 'Sign Up'}
+                                    {isSubmitting ? 'Processing...' : (isLogin ? 'Log In' : 'Sign Up')}
                                 </button>
                             </Form>
                         )}

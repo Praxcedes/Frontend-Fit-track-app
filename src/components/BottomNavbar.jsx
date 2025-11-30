@@ -2,11 +2,13 @@
 import React, { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import api from '../services/api'; // ADDED: API service for metrics
 import '../styles/Navbar.css';
 
 import {
     FaHome, FaDumbbell, FaChartLine, FaUserFriends,
-    FaTint, FaWeight, FaSignOutAlt, FaTimes, FaCheck
+    FaTint, FaWeight, FaSignOutAlt, FaTimes, FaCheck,
+    FaSpinner
 } from 'react-icons/fa';
 
 const BottomNavbar = () => {
@@ -15,9 +17,10 @@ const BottomNavbar = () => {
     const navigate = useNavigate();
 
     // State
-    const [waterCount, setWaterCount] = useState(0);
+    const [waterCount, setWaterCount] = useState(0); // Frontend counter (resets on refresh)
     const [showWeightModal, setShowWeightModal] = useState(false);
     const [weightInput, setWeightInput] = useState('');
+    const [isSaving, setIsSaving] = useState(false); // New state to prevent double-submission
 
     const isActive = (path) => location.pathname === path ? 'active' : '';
 
@@ -26,12 +29,59 @@ const BottomNavbar = () => {
         navigate('/');
     };
 
-    const handleSaveWeight = () => {
-        if (weightInput) {
-            // Here you would call API to save weight
-            alert(`Weight logged: ${weightInput} kg`);
+    // --- UTILITY LOGIC: WATER ---
+    const handleLogWater = async () => {
+        if (isSaving) return;
+
+        // Log 250ml per tap
+        const amount = 250;
+
+        try {
+            setIsSaving(true);
+            const response = await api.post('/metrics/log_water', { amount_ml: amount });
+
+            // Optimistically update the local counter on success
+            setWaterCount(c => c + 1);
+            console.log("Water logged successfully:", response.data.log);
+
+        } catch (error) {
+            console.error("Failed to log water:", error.response?.data || error);
+            alert("Error logging water. Please check your network.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    // --- UTILITY LOGIC: WEIGHT ---
+    const handleSaveWeight = async () => {
+        const weightValue = parseFloat(weightInput);
+        if (isNaN(weightValue) || weightValue <= 0) {
+            alert("Please enter a valid positive number for weight.");
+            return;
+        }
+
+        if (isSaving) return;
+
+        try {
+            setIsSaving(true);
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+            const response = await api.post('/metrics/log_weight', {
+                weight_kg: weightValue,
+                date: today
+            });
+
+            alert(`Weight logged: ${weightValue} kg`);
+            console.log("Weight logged successfully:", response.data.log);
+
             setWeightInput('');
             setShowWeightModal(false);
+
+        } catch (error) {
+            console.error("Failed to save weight:", error.response?.data || error);
+            alert("Error saving weight. Check console for details.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -61,9 +111,14 @@ const BottomNavbar = () => {
 
                 {/* Utilities Group */}
                 <div className="bottom-utilities">
-                    {/* Water: Quick Tap (No Modal needed for speed) */}
-                    <button className="utility-btn water" onClick={() => setWaterCount(c => c + 1)} title="Log Water (+1 Cup)">
-                        <FaTint />
+                    {/* Water: Quick Tap */}
+                    <button
+                        className="utility-btn water"
+                        onClick={handleLogWater}
+                        title="Log Water (+250ml)"
+                        disabled={isSaving}
+                    >
+                        {isSaving ? <FaSpinner className="spin" /> : <FaTint />}
                         {waterCount > 0 && <span className="badge-counter">{waterCount}</span>}
                     </button>
 
@@ -72,6 +127,7 @@ const BottomNavbar = () => {
                         className="utility-btn"
                         onClick={() => setShowWeightModal(true)}
                         title="Log Weight"
+                        disabled={isSaving}
                     >
                         <FaWeight />
                     </button>
@@ -102,11 +158,16 @@ const BottomNavbar = () => {
                                 value={weightInput}
                                 onChange={(e) => setWeightInput(e.target.value)}
                                 autoFocus
+                                disabled={isSaving}
                             />
                         </div>
 
-                        <button className="btn-modal-action btn-primary" onClick={handleSaveWeight}>
-                            <FaCheck /> Save Entry
+                        <button
+                            className="btn-modal-action btn-primary"
+                            onClick={handleSaveWeight}
+                            disabled={isSaving}
+                        >
+                            {isSaving ? <><FaSpinner className="spin" /> Saving...</> : <><FaCheck /> Save Entry</>}
                         </button>
                     </div>
                 </div>

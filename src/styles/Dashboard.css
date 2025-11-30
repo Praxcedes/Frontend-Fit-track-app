@@ -7,6 +7,10 @@
     --card-gradient: linear-gradient(145deg, #1a1a1a, #0d0d0d);
     --text-white: #ffffff;
     --text-grey: #a1a1a1;
+    --accent-blue: #00bfff;
+    /* Color for water/hydration */
+    --accent-green: #32cd32;
+    /* Color for weight trend/progress */
 }
 
 /* --- MAIN LAYOUT --- */
@@ -49,7 +53,7 @@
 }
 
 /* ---------------------------------- */
-/* PERFECT CENTERING USING CSS GRID   */
+/* PERFECT CENTERING USING CSS GRID   */
 /* ---------------------------------- */
 .header-actions {
     display: grid;
@@ -119,10 +123,59 @@
 }
 
 /* Top Section (Overview + Activities) */
+/* Layout for the main left panel items (Graph, Goals, Next Workout, Activities) */
 .top-section {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
+    /* Two extra columns for the new utility cards */
+    grid-template-rows: auto auto;
     gap: 25px;
+}
+
+/* Assigning grid areas */
+.overview-card {
+    grid-column: 1 / span 2;
+    /* Main graph spans two columns */
+    grid-row: 1 / span 1;
+}
+
+/* New card container for Goal, Next Workout, and Activities */
+.utility-column {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    grid-column: 3 / span 1;
+    grid-row: 1 / span 2;
+}
+
+.activity-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    grid-column: 1 / span 3;
+    /* Activities row spans all three columns */
+    grid-row: 2 / span 1;
+}
+
+/* Adjusting layout for smaller screens */
+@media (max-width: 1200px) {
+    .top-section {
+        grid-template-columns: 1fr;
+        /* All single column */
+        grid-template-rows: auto;
+    }
+
+    .overview-card,
+    .utility-column,
+    .activity-cards {
+        grid-column: 1 / span 1;
+        grid-row: auto;
+    }
+
+    .utility-column {
+        flex-direction: row;
+        /* Layout goals/pr/next side-by-side */
+    }
 }
 
 /* Common Card Style */
@@ -134,6 +187,11 @@
     border: 1px solid #222;
     position: relative;
     overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.dash-card:hover {
+    transform: translateY(-2px);
 }
 
 /* Overview Card (Large Chart) */
@@ -202,8 +260,8 @@
 
 /* Activity Cards */
 .activity-cards {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 25px;
 }
 
@@ -228,6 +286,156 @@
     font-size: 1.5rem;
 }
 
+/* --- NEW FEATURE STYLES --- */
+
+/* Hydration Goal Card */
+.goal-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+    background: linear-gradient(145deg, #0b1a20, #0d0d0d);
+    /* Darker blue shade */
+    border-left: 5px solid var(--accent-blue);
+}
+
+.goal-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: #333;
+    border-radius: 4px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--accent-blue);
+    transition: width 0.5s ease-out;
+}
+
+/* Next Workout Card */
+.next-workout-card {
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.next-workout-card h3 {
+    margin: 5px 0;
+    font-size: 1.5rem;
+    color: var(--primary-orange);
+}
+
+.btn-quick-start {
+    background-color: var(--accent-green);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-quick-start:hover {
+    background-color: #2e962e;
+}
+
+/* Log Action Button (Used for water/weight CTAs) */
+.btn-log-action {
+    background: #333;
+    color: var(--text-white);
+    border: 1px solid #444;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-log-action:hover {
+    background: #444;
+}
+
+.small-btn {
+    font-size: 0.9rem;
+}
+
+.cta-message {
+    font-size: 0.9rem;
+    color: var(--text-grey);
+    text-align: center;
+    margin-top: 10px;
+}
+
+
+/* Weight Trend Card */
+.weight-trend-card {
+    min-height: 180px;
+    border-bottom: 5px solid var(--accent-green);
+}
+
+.weight-trend-card h3 {
+    font-size: 2rem;
+    margin: 0;
+    color: var(--accent-green);
+}
+
+.trend-message {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Personal Records Card */
+.pr-card {
+    min-height: 180px;
+}
+
+.pr-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #222;
+}
+
+.pr-item:last-child {
+    border-bottom: none;
+}
+
+.pr-exercise {
+    font-weight: 600;
+    color: var(--text-white);
+}
+
+.pr-value {
+    color: var(--primary-orange);
+    font-weight: 700;
+}
+
+.pr-view {
+    color: var(--text-grey);
+}
+
+
 /* RIGHT PANEL */
 .right-panel {
     display: flex;
@@ -250,7 +458,7 @@
     z-index: 1;
 }
 
-/* --- NOTIFICATION MODAL --- */
+/* --- NOTIFICATION MODAL (Unchanged) --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -323,6 +531,24 @@
 
     .right-panel {
         display: block;
+    }
+
+    .top-section {
+        grid-template-columns: 1fr;
+        /* All single column */
+        grid-template-rows: auto;
+    }
+
+    .overview-card,
+    .utility-column,
+    .activity-cards {
+        grid-column: 1 / span 1;
+        grid-row: auto;
+    }
+
+    .utility-column {
+        flex-direction: column;
+        /* Revert back to column layout for utility cards */
     }
 }
 

@@ -1,43 +1,109 @@
 // src/context/UserContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
-import api from '../services/api'; // Import your axios instance
+import api from '../services/api';
 
-// Create the Context object
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Loading state for initial check
+    const [loading, setLoading] = useState(true);
 
-    // 1. Check if user is already logged in (Auto-login)
+    // --- SESSION CHECK (runs once on load) ---
     useEffect(() => {
-        // This assumes your backend has a route GET /check_session
-        // If backend isn't ready, this will just fail quietly and user stays logged out
-        api.get('/check_session')
-            .then((response) => {
-                setUser(response.data);
-                setLoading(false);
-            })
-            .catch(() => {
-                setLoading(false); // Not logged in
-            });
+        const checkLoggedIn = async () => {
+            const token = localStorage.getItem('access_token');
+            console.log('Session check - Token found:', !!token); // Debug
+
+            if (token) {
+                try {
+                    const res = await api.get('/auth/check_session');
+                    setUser(res.data.user);
+                    console.log('Session valid - User:', res.data.user.username); // Debug
+                } catch (error) {
+                    console.error("Session check failed:", error.response?.data || error.message);
+                    localStorage.removeItem('access_token');
+                    setUser(null);
+                }
+            }
+            setLoading(false);
+        };
+        checkLoggedIn();
     }, []);
 
-    // 2. Login Function (Call this from Login.jsx)
+    // --- LOGIN ---
     const login = async (email, password) => {
-        // Replace with your actual backend login route
-        const response = await api.post('/login', { email, password });
-        setUser(response.data); // Store user data (e.g., { id: 1, username: 'David' })
+        try {
+            console.log('Login attempt for:', email); // Debug
+
+            const response = await api.post('/auth/login', {
+                username: email,
+                password
+            });
+
+            const { access_token, user } = response.data;
+
+            // Store token and update state
+            localStorage.setItem('access_token', access_token);
+            setUser(user);
+
+            console.log('Login successful - User:', user.username); // Debug
+            console.log('Token stored:', !!access_token); // Debug
+
+            return { success: true };
+        } catch (error) {
+            console.error("Login Error:", error.response?.data || error.message);
+            const errorMessage = error.response?.data?.error ||
+                error.response?.data?.errors?.join(', ') ||
+                "Login failed";
+            return { success: false, message: errorMessage };
+        }
     };
 
-    // 3. Logout Function
-    const logout = async () => {
-        await api.delete('/logout');
+    // --- SIGNUP ---
+    const signup = async (username, email, password) => {
+        try {
+            console.log('Signup attempt for:', username, email); // Debug
+
+            const response = await api.post('/auth/signup', {
+                username,
+                email,
+                password
+            });
+
+            const { access_token, user } = response.data;
+
+            // Store token and update state
+            localStorage.setItem('access_token', access_token);
+            setUser(user);
+
+            console.log('Signup successful - User:', user.username); // Debug
+            console.log('Token stored:', !!access_token); // Debug
+
+            return { success: true };
+        } catch (error) {
+            console.error("Signup Error:", error.response?.data || error.message);
+            const errorMessage = error.response?.data?.error ||
+                error.response?.data?.errors?.join(', ') ||
+                "Signup failed";
+            return { success: false, message: errorMessage };
+        }
+    };
+
+    // --- LOGOUT ---
+    const logout = () => {
+        console.log('Logging out user:', user?.username); // Debug
+        localStorage.removeItem('access_token');
         setUser(null);
     };
 
     return (
-        <UserContext.Provider value={{ user, setUser, login, logout, loading }}>
+        <UserContext.Provider value={{
+            user,
+            loading,
+            login,
+            signup,
+            logout
+        }}>
             {children}
         </UserContext.Provider>
     );

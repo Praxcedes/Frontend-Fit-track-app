@@ -1,23 +1,27 @@
 // src/pages/Settings.jsx
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import api from '../services/api'; // Import API service
 import '../styles/Dashboard.css';
 import '../styles/Settings.css';
 
 import {
     FaUserCircle, FaLock, FaExternalLinkAlt, FaTrash,
     FaSun, FaRulerCombined, FaBell, FaGlobe,
-    FaHandsHelping, FaInfoCircle, FaChevronRight, FaTimes
+    FaHandsHelping, FaInfoCircle, FaChevronRight, FaTimes,
+    FaSignOutAlt // Added Logout Icon
 } from 'react-icons/fa';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user, loading, logout } = useContext(UserContext);
+    const { user, loading, logout, setUser } = useContext(UserContext); // Get setUser to update context
 
     const [activeForm, setActiveForm] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formError, setFormError] = useState(null);
 
-    // Initial States
+    // Initial States (These would be fetched from a user_preferences endpoint in a full app)
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isSharingLocation, setIsSharingLocation] = useState(false);
     const [isPushEnabled, setIsPushEnabled] = useState(true);
@@ -26,8 +30,11 @@ const Settings = () => {
     const APP_VERSION = "1.0.3";
 
     // --- HANDLERS ---
+
     const handleSavePreferences = (preferenceName, value) => {
+        // Placeholder for saving non-core settings (e.g., theme, unit preference) to a preference model
         console.log(`Setting saved: ${preferenceName} set to ${value}`);
+        // Future: api.put('/profile/preferences', { [preferenceName]: value });
     };
 
     const handleUnitsChange = (e) => {
@@ -36,26 +43,81 @@ const Settings = () => {
         handleSavePreferences('units', newUnits);
     };
 
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
+
     const handleDataDeletion = () => {
-        if (window.confirm("WARNING: Requesting data deletion is permanent. Are you sure?")) {
+        if (window.confirm("WARNING: Requesting data deletion is permanent. All your logs and workout history will be erased. Are you sure?")) {
+            // Future: api.delete('/profile/data');
             alert("Data Deletion Request Sent. You will receive an email confirmation.");
+            // Log out user after request
+            logout();
         }
     };
 
-    /* REMOVED: handleLogout function and usage */
-
-
-    // --- Form Submission Handlers (Placeholders) ---
-    const handleProfileSubmit = (e) => {
+    // --- Form Submission Handlers (API INTEGRATION) ---
+    const handleProfileSubmit = async (e) => {
         e.preventDefault();
-        alert("Profile updated successfully! (Backend integration pending)");
-        setActiveForm(null);
+        setFormError(null);
+        setIsSubmitting(true);
+
+        const form = e.target;
+        const username = form.username.value;
+        const email = form.email.value;
+
+        try {
+            // FIX: Added trailing slash to resolve 308 redirect error
+            const response = await api.put('/profile/', { username, email });
+
+            // Update UserContext immediately with new data
+            setUser(response.data.user);
+
+            alert("Profile updated successfully!");
+            setActiveForm(null);
+
+        } catch (error) {
+            setFormError(error.response?.data?.error || "Failed to update profile.");
+            console.error('Profile update failed:', error.response?.data);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const handlePasswordSubmit = (e) => {
+    const handlePasswordSubmit = async (e) => {
         e.preventDefault();
-        alert("Password changed successfully! (Backend integration pending)");
-        setActiveForm(null);
+        setFormError(null);
+        setIsSubmitting(true);
+
+        const form = e.target;
+        const current_password = form.current_password.value;
+        const new_password = form.new_password.value;
+        const confirm_password = form.confirm_password.value;
+
+        if (new_password !== confirm_password) {
+            setFormError("New password and confirmation do not match.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        try {
+            // FIX: Added trailing slash to resolve 308 redirect error
+            await api.put('/profile/password/', {
+                current_password,
+                new_password
+            });
+
+            alert("Password changed successfully! Please log in again.");
+            setActiveForm(null);
+            logout(); // Force re-login after password change for security
+
+        } catch (error) {
+            setFormError(error.response?.data?.error || "Failed to change password. Check current password.");
+            console.error('Password change failed:', error.response?.data);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -63,8 +125,17 @@ const Settings = () => {
 
     // 1. Edit Profile Form
     const EditProfileForm = () => {
-        const [username, setUsername] = useState(user.username);
-        const [email, setEmail] = useState(user.email);
+        const [username, setUsername] = useState(user.username || '');
+        const [email, setEmail] = useState(user.email || '');
+
+        // useEffect to ensure component loads current user data if available
+        useEffect(() => {
+            if (user) {
+                setUsername(user.username || '');
+                setEmail(user.email || '');
+            }
+        }, [user]);
+
 
         return (
             <div className="settings-form-container">
@@ -72,24 +143,31 @@ const Settings = () => {
                     <h3>Edit Profile Details</h3>
                     <FaTimes className="close-icon" onClick={() => setActiveForm(null)} />
                 </div>
+                {formError && <p className="form-error-message">{formError}</p>}
                 <form onSubmit={handleProfileSubmit}>
                     <div className="form-group">
                         <label>Username</label>
                         <input
                             type="text"
+                            name="username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            disabled={isSubmitting}
                         />
                     </div>
                     <div className="form-group">
                         <label>Email</label>
                         <input
                             type="email"
+                            name="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            disabled={isSubmitting}
                         />
                     </div>
-                    <button type="submit" className="btn-save-form">Save Changes</button>
+                    <button type="submit" className="btn-save-form" disabled={isSubmitting}>
+                        {isSubmitting ? 'Saving...' : 'Save Changes'}
+                    </button>
                 </form>
             </div>
         );
@@ -107,32 +185,41 @@ const Settings = () => {
                     <h3>Change Password</h3>
                     <FaTimes className="close-icon" onClick={() => setActiveForm(null)} />
                 </div>
+                {formError && <p className="form-error-message">{formError}</p>}
                 <form onSubmit={handlePasswordSubmit}>
                     <div className="form-group">
                         <label>Current Password</label>
                         <input
                             type="password"
+                            name="current_password"
                             value={oldPassword}
                             onChange={(e) => setOldPassword(e.target.value)}
+                            disabled={isSubmitting}
                         />
                     </div>
                     <div className="form-group">
                         <label>New Password</label>
                         <input
                             type="password"
+                            name="new_password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
+                            disabled={isSubmitting}
                         />
                     </div>
                     <div className="form-group">
                         <label>Confirm New Password</label>
                         <input
                             type="password"
+                            name="confirm_password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            disabled={isSubmitting}
                         />
                     </div>
-                    <button type="submit" className="btn-save-form">Change Password</button>
+                    <button type="submit" className="btn-save-form" disabled={isSubmitting}>
+                        {isSubmitting ? 'Changing...' : 'Change Password'}
+                    </button>
                 </form>
             </div>
         );
@@ -154,12 +241,12 @@ const Settings = () => {
     };
 
     if (loading) return <div className="loading-screen">Loading Settings...</div>;
-    if (!user) return <div className="loading-screen">Please log in to view settings.</div>;
+    const userEmail = user.email || 'user.email@example.com';
 
     // --- Render Form Overlay if activeForm is set ---
     if (activeForm) {
         return (
-            <div className="modal-overlay">
+            <div className="modal-overlay" onClick={() => setActiveForm(null)}>
                 <div className="settings-modal-content" onClick={(e) => e.stopPropagation()}>
                     {activeForm === 'profile' && <EditProfileForm />}
                     {activeForm === 'password' && <ChangePasswordForm />}
@@ -185,8 +272,8 @@ const Settings = () => {
                             <div className="setting-details">
                                 <FaUserCircle className="setting-icon" />
                                 <div>
-                                    <p style={{ margin: 0 }}>{user.username}</p>
-                                    <span>{user.email}</span>
+                                    <p style={{ margin: 0 }}>**{user.username}**</p>
+                                    <span>{userEmail}</span>
                                 </div>
                             </div>
                             <button className="btn-setting-action" onClick={() => setActiveForm('profile')}>
@@ -217,6 +304,20 @@ const Settings = () => {
                                 onClick={handleDataDeletion}
                             >
                                 Request Deletion
+                            </button>
+                        </div>
+
+                        {/* Logout Button (ADDED) */}
+                        <div className="setting-item">
+                            <div className="setting-details">
+                                <FaSignOutAlt className="setting-icon" style={{ color: 'var(--primary-orange)' }} />
+                                <span>Log Out</span>
+                            </div>
+                            <button
+                                className="btn-setting-action"
+                                onClick={handleLogout}
+                            >
+                                Log Out
                             </button>
                         </div>
                     </div>

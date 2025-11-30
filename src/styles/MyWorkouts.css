@@ -1,10 +1,17 @@
 /* src/styles/MyWorkouts.css */
 :root {
+    /* Inherit variables from Dashboard.css/global styles */
+    --primary-orange: #FF4500;
+    --card-bg: #141414;
+    --card-gradient: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+    --text-white: #ffffff;
+    --text-grey: #a1a1a1;
+
+    /* Status Colors */
     --log-status-complete: #32cd32;
     /* Lime Green */
     --log-status-quit: #ff4d4d;
     /* Light Red */
-    --log-icon-bg: rgba(255, 255, 255, 0.08);
 }
 
 /* --- Summary Cards Grid --- */
@@ -16,21 +23,27 @@
 }
 
 .summary-card {
-    background: var(--card-bg);
+    background: var(--card-gradient);
+    /* Use gradient for consistency */
     padding: 20px;
     border-radius: 15px;
     border: 1px solid #222;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    /* Added subtle shadow */
 }
 
 .summary-icon {
     font-size: 1.5rem;
     color: var(--primary-orange);
+    /* Default color for DUMBBELL icon */
     background: rgba(255, 69, 0, 0.1);
     padding: 10px;
     border-radius: 50%;
+    flex-shrink: 0;
+    /* Prevents icon from shrinking on small screens */
 }
 
 .summary-value h3 {
@@ -66,6 +79,22 @@
     align-items: center;
 }
 
+.filter-controls select {
+    background: transparent;
+    color: var(--text-white);
+    border: 1px solid #333;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.filter-controls select:focus {
+    border-color: var(--primary-orange);
+    outline: none;
+}
+
 /* --- Activity Log List --- */
 .activity-log-list {
     display: flex;
@@ -81,17 +110,24 @@
     justify-content: space-between;
     align-items: center;
     border: 1px solid #222;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.2s;
 }
 
 .log-entry-card:hover {
     background: #1a1a1a;
+    transform: translateY(-2px);
 }
 
 .log-details {
     display: flex;
     align-items: center;
     gap: 20px;
+}
+
+.log-details .fa-chart-line {
+    font-size: 1.5rem;
+    color: var(--primary-orange);
+    /* Highlight chart icon */
 }
 
 .log-workout-name h4 {
@@ -114,6 +150,7 @@
     text-transform: uppercase;
     min-width: 80px;
     text-align: center;
+    letter-spacing: 0.5px;
 }
 
 .status-completed {
@@ -124,6 +161,20 @@
 .status-quit {
     background: rgba(255, 77, 77, 0.2);
     color: var(--log-status-quit);
+}
+
+/* View Details Button */
+.icon-btn {
+    font-size: 1.1rem;
+    color: var(--primary-orange);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.icon-btn:hover {
+    color: var(--primary-hover);
 }
 
 /* --- Empty State --- */
@@ -151,5 +202,15 @@
     .filter-controls {
         width: 100%;
         justify-content: space-between;
+    }
+
+    .log-entry-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .log-details {
+        width: 100%;
     }
 }
