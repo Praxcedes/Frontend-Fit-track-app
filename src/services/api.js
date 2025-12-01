@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://fittrack-api.onrender.com',
+    baseURL: 'https://backend-fit-track-app.onrender.com',
     headers: {
         'Content-Type': 'application/json',
     },
