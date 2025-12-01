@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import api from '../services/api'; // Import API service
+import api from '../services/api';
 import '../styles/Dashboard.css';
 import '../styles/Settings.css';
 
@@ -9,18 +9,17 @@ import {
     FaUserCircle, FaLock, FaExternalLinkAlt, FaTrash,
     FaSun, FaRulerCombined, FaBell, FaGlobe,
     FaHandsHelping, FaInfoCircle, FaChevronRight, FaTimes,
-    FaSignOutAlt // Added Logout Icon
+    FaSignOutAlt
 } from 'react-icons/fa';
 
 const Settings = () => {
     const navigate = useNavigate();
-    const { user, loading, logout, setUser } = useContext(UserContext); // Get setUser to update context
+    const { user, loading, logout, setUser } = useContext(UserContext);
 
     const [activeForm, setActiveForm] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState(null);
 
-    // Initial States (These would be fetched from a user_preferences endpoint in a full app)
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isSharingLocation, setIsSharingLocation] = useState(false);
     const [isPushEnabled, setIsPushEnabled] = useState(true);
@@ -28,12 +27,9 @@ const Settings = () => {
 
     const APP_VERSION = "1.0.3";
 
-    // --- HANDLERS ---
 
     const handleSavePreferences = (preferenceName, value) => {
-        // Placeholder for saving non-core settings (e.g., theme, unit preference) to a preference model
         console.log(`Setting saved: ${preferenceName} set to ${value}`);
-        // Future: api.put('/profile/preferences', { [preferenceName]: value });
     };
 
     const handleUnitsChange = (e) => {
@@ -49,14 +45,11 @@ const Settings = () => {
 
     const handleDataDeletion = () => {
         if (window.confirm("WARNING: Requesting data deletion is permanent. All your logs and workout history will be erased. Are you sure?")) {
-            // Future: api.delete('/profile/data');
             alert("Data Deletion Request Sent. You will receive an email confirmation.");
-            // Log out user after request
             logout();
         }
     };
 
-    // --- Form Submission Handlers (API INTEGRATION) ---
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
         setFormError(null);
@@ -67,10 +60,8 @@ const Settings = () => {
         const email = form.email.value;
 
         try {
-            // FIX: Added trailing slash to resolve 308 redirect error
             const response = await api.put('/profile/', { username, email });
 
-            // Update UserContext immediately with new data
             setUser(response.data.user);
 
             alert("Profile updated successfully!");
@@ -101,7 +92,6 @@ const Settings = () => {
         }
 
         try {
-            // FIX: Added trailing slash to resolve 308 redirect error
             await api.put('/profile/password/', {
                 current_password,
                 new_password
@@ -109,7 +99,7 @@ const Settings = () => {
 
             alert("Password changed successfully! Please log in again.");
             setActiveForm(null);
-            logout(); // Force re-login after password change for security
+            logout();
 
         } catch (error) {
             setFormError(error.response?.data?.error || "Failed to change password. Check current password.");
@@ -120,14 +110,10 @@ const Settings = () => {
     };
 
 
-    // --- INTERNAL FORM COMPONENTS ---
-
-    // 1. Edit Profile Form
     const EditProfileForm = () => {
         const [username, setUsername] = useState(user.username || '');
         const [email, setEmail] = useState(user.email || '');
 
-        // useEffect to ensure component loads current user data if available
         useEffect(() => {
             if (user) {
                 setUsername(user.username || '');
@@ -172,7 +158,6 @@ const Settings = () => {
         );
     };
 
-    // 2. Change Password Form
     const ChangePasswordForm = () => {
         const [oldPassword, setOldPassword] = useState('');
         const [newPassword, setNewPassword] = useState('');
@@ -224,7 +209,6 @@ const Settings = () => {
         );
     };
 
-    // --- Reusable Toggle Component ---
     const ToggleSwitch = ({ checked, onChange, preferenceName }) => {
         const handleChange = () => {
             const newState = !checked;
@@ -242,7 +226,6 @@ const Settings = () => {
     if (loading) return <div className="loading-screen">Loading Settings...</div>;
     const userEmail = user.email || 'user.email@example.com';
 
-    // --- Render Form Overlay if activeForm is set ---
     if (activeForm) {
         return (
             <div className="modal-overlay" onClick={() => setActiveForm(null)}>
@@ -255,7 +238,6 @@ const Settings = () => {
     }
 
 
-    // --- Render Main Settings List ---
     return (
         <div className="dashboard-layout">
             <main className="main-content">

@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const api = axios.create({
-    // UPDATE: Pointing to deployed Render Backend
     baseURL: 'https://fittrack-api.onrender.com',
     headers: {
         'Content-Type': 'application/json',

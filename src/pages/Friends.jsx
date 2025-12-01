@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import api from '../services/api'; // ADDED: API import for friend management
+import api from '../services/api';
 import { FaUserPlus, FaUsers, FaTrophy, FaFire, FaCamera, FaCheck, FaTimes, FaComment, FaDumbbell } from 'react-icons/fa';
 import '../styles/Dashboard.css';
 import '../styles/Friends.css';
 import MapComponent from '../components/MapComponent';
 
-// --- MOCK DATA (Temporary) ---
 const MOCK_FRIENDS = [
     { id: 1, name: "Max Stone", status: 'online', streak: 7, lastActivity: "5K Run", score: 850 },
     { id: 2, name: "Griselda Jack", status: 'offline', streak: 3, lastActivity: "Upper Body", score: 620 },
@@ -19,35 +18,22 @@ const MOCK_REQUESTS = [
 ];
 
 const Friends = () => {
-    // --- STATE ---
     const [friends, setFriends] = useState(MOCK_FRIENDS);
     const [requests, setRequests] = useState(MOCK_REQUESTS);
     const [searchQuery, setSearchQuery] = useState('');
     const [leaderboardSort, setLeaderboardSort] = useState('score');
-    const [loading, setLoading] = useState(false); // ADDED: Loading state for fetching
-    const [fetchError, setFetchError] = useState(null); // ADDED: Error state
+    const [loading, setLoading] = useState(false);
+    const [fetchError, setFetchError] = useState(null);
 
-    // --- EFFECT: FETCH INITIAL DATA ---
     useEffect(() => {
         const fetchFriendData = async () => {
             setLoading(true);
             try {
-                // NOTE: These API endpoints are placeholders (e.g., /friends and /requests)
-                // They need to be implemented in the Flask backend for this to work.
-
-                // const friendsResponse = await api.get('/friends');
-                // const requestsResponse = await api.get('/friend-requests');
-
-                // setFriends(friendsResponse.data.friends || []);
-                // setRequests(requestsResponse.data.requests || []);
-
-                // Keeping MOCK data for display until endpoints are implemented:
                 setFriends(MOCK_FRIENDS);
                 setRequests(MOCK_REQUESTS);
             } catch (error) {
                 console.error("Failed to fetch social data:", error);
                 setFetchError("Failed to load friends list or requests.");
-                // Fallback to mock data if error occurs
                 setFriends(MOCK_FRIENDS);
                 setRequests(MOCK_REQUESTS);
             } finally {
@@ -58,16 +44,12 @@ const Friends = () => {
         fetchFriendData();
     }, []);
 
-    // Sort logic for Leaderboard
     const sortedLeaderboard = [...friends].sort((a, b) => {
         if (leaderboardSort === 'score') return b.score - a.score;
         if (leaderboardSort === 'streak') return b.streak - a.streak;
         return 0;
     });
 
-    // --- ACTIONS (Now use Alerts/Console logging as placeholders for API calls) ---
-
-    // NOTE: These functions must be updated to call the backend API (e.g., api.put('/friend-requests/accept', { id }))
     const handleAccept = (id) => {
         console.log(`API Call Placeholder: ACCEPT request ${id}`);
         const user = requests.find(r => r.id === id);
@@ -90,7 +72,6 @@ const Friends = () => {
         }
     };
 
-    // --- LOADING/ERROR UI ---
     if (loading) {
         return <div className="loading-state" style={{ textAlign: 'center', padding: '100px', color: 'var(--primary)' }}>
             <FaDumbbell style={{ fontSize: '3rem', animation: 'spin 1s linear infinite' }} />

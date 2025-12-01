@@ -7,17 +7,15 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // --- SESSION CHECK (runs once on load) ---
     useEffect(() => {
         const checkLoggedIn = async () => {
             const token = localStorage.getItem('access_token');
-            console.log('Session check - Token found:', !!token); // Debug
-
+            console.log('Session check - Token found:', !!token);
             if (token) {
                 try {
                     const res = await api.get('/auth/check_session');
                     setUser(res.data.user);
-                    console.log('Session valid - User:', res.data.user.username); // Debug
+                    console.log('Session valid - User:', res.data.user.username);
                 } catch (error) {
                     console.error("Session check failed:", error.response?.data || error.message);
                     localStorage.removeItem('access_token');
@@ -29,24 +27,23 @@ export const UserProvider = ({ children }) => {
         checkLoggedIn();
     }, []);
 
-    // --- LOGIN ---
-    const login = async (email, password) => {
+    const login = async (loginIdentifier, password) => {
         try {
-            console.log('Login attempt for:', email); // Debug
+            console.log('Login attempt for:', loginIdentifier);
 
             const response = await api.post('/auth/login', {
-                username: email,
+                username: loginIdentifier,
                 password
             });
 
             const { access_token, user } = response.data;
 
-            // Store token and update state
+
             localStorage.setItem('access_token', access_token);
             setUser(user);
 
-            console.log('Login successful - User:', user.username); // Debug
-            console.log('Token stored:', !!access_token); // Debug
+            console.log('Login successful - User:', user.username);
+            console.log('Token stored:', !!access_token);
 
             return { success: true };
         } catch (error) {
@@ -58,10 +55,9 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    // --- SIGNUP ---
     const signup = async (username, email, password) => {
         try {
-            console.log('Signup attempt for:', username, email); // Debug
+            console.log('Signup attempt for:', username, email);
 
             const response = await api.post('/auth/signup', {
                 username,
@@ -71,12 +67,11 @@ export const UserProvider = ({ children }) => {
 
             const { access_token, user } = response.data;
 
-            // Store token and update state
             localStorage.setItem('access_token', access_token);
             setUser(user);
 
-            console.log('Signup successful - User:', user.username); // Debug
-            console.log('Token stored:', !!access_token); // Debug
+            console.log('Signup successful - User:', user.username);
+            console.log('Token stored:', !!access_token);
 
             return { success: true };
         } catch (error) {
@@ -88,9 +83,8 @@ export const UserProvider = ({ children }) => {
         }
     };
 
-    // --- LOGOUT ---
     const logout = () => {
-        console.log('Logging out user:', user?.username); // Debug
+        console.log('Logging out user:', user?.username);
         localStorage.removeItem('access_token');
         setUser(null);
     };

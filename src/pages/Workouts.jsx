@@ -1,21 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api'; // API import for data fetching
+import api from '../services/api';
 import '../styles/Dashboard.css';
 import '../styles/Workouts.css';
 
 import { FaSearch, FaClock, FaFire, FaChevronLeft, FaChevronRight, FaTimes, FaPlay, FaDumbbell, FaSort } from 'react-icons/fa';
 
-// --- MOCK DATA --- 
-// ... (MOCK data array remains here for completeness but is not accessed)
 const MOCK_WORKOUTS = [
-    // ...
+
 ];
 
-// Updated CATEGORIES based on the new exercise muscle groups
 const CATEGORIES = ["All", "Strength", "Legs", "Shoulders", "Bodyweight", "Arms", "Core", "Cardio"];
 
-// Helper function to convert duration strings to minutes for sorting
 const parseDuration = (duration) => parseInt(duration.split(' ')[0], 10);
 const parseLevel = (level) => {
     switch (level) {
@@ -29,12 +25,11 @@ const parseLevel = (level) => {
 const Workouts = () => {
     const navigate = useNavigate();
 
-    // --- NEW: STATE FOR REAL DATA ---
-    const [originalWorkouts, setOriginalWorkouts] = useState([]); // Stores fetched data
+
+    const [originalWorkouts, setOriginalWorkouts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [fetchError, setFetchError] = useState(null);
 
-    // --- STATE INITIALIZATION & PERSISTENCE ---
     const getInitialState = (key, defaultValue) => {
         const storedValue = localStorage.getItem(key);
         return storedValue ? JSON.parse(storedValue) : defaultValue;
@@ -45,35 +40,29 @@ const Workouts = () => {
     const [sortCriteria, setSortCriteria] = useState(getInitialState('workoutSort', 'title-asc'));
     const [suggestions, setSuggestions] = useState([]);
 
-    // MODAL & SWIPER STATE
     const [selectedWorkout, setSelectedWorkout] = useState(null);
-    const swiperRefs = useRef({}); // To hold refs for each card's carousel
-    const [activeSlides, setActiveSlides] = useState({}); // To track current slide index per card
+    const swiperRefs = useRef({});
+    const [activeSlides, setActiveSlides] = useState({});
 
-
-    // --- EFFECT 1: FETCH DATA FROM BACKEND ---
     useEffect(() => {
         const fetchWorkouts = async () => {
             try {
-                // FIX 1: Use trailing slash for API call to avoid 308 redirect
                 const response = await api.get('/exercises/');
 
-                // FIX 2: Check if data is nested or direct array. If direct array, use it.
                 const exercisesData = response.data.exercises || response.data;
 
                 if (!Array.isArray(exercisesData)) {
                     throw new Error("Invalid data format received from server.");
                 }
 
-                // FIX: Map the fetched data to match the FE's expected structure
                 const mappedExercises = exercisesData.map(ex => ({
                     id: ex.id,
-                    title: ex.title,       // Uses the MAPPED 'title' from models.py
-                    category: ex.category, // Uses the MAPPED 'category' from models.py
-                    level: ex.level,       // Uses the MAPPED 'level' from models.py
-                    duration: ex.duration, // Uses the MAPPED 'duration' from models.py
-                    desc: ex.instructions, // Maps backend 'instructions' (or similar) to 'desc'
-                    images: ex.images,     // Uses the MAPPED 'images' array from models.py
+                    title: ex.title,
+                    category: ex.category,
+                    level: ex.level,
+                    duration: ex.duration,
+                    desc: ex.instructions,
+                    images: ex.images,
                 }));
 
                 setOriginalWorkouts(mappedExercises);
@@ -86,10 +75,8 @@ const Workouts = () => {
         };
 
         fetchWorkouts();
-    }, []); // Runs once on component mount
+    }, []);
 
-
-    // Effect to load initial state from localStorage (runs once)
     useEffect(() => {
         const storedSearch = localStorage.getItem('workoutSearch');
         const storedCategory = localStorage.getItem('workoutCategory');
@@ -100,20 +87,17 @@ const Workouts = () => {
         if (storedSort !== null) setSortCriteria(JSON.parse(storedSort));
     }, []);
 
-    // Effect to save state to localStorage on every change
     useEffect(() => {
         localStorage.setItem('workoutSearch', JSON.stringify(searchQuery));
         localStorage.setItem('workoutCategory', JSON.stringify(activeCategory));
         localStorage.setItem('workoutSort', JSON.stringify(sortCriteria));
     }, [searchQuery, activeCategory, sortCriteria]);
 
-    // --- FILTER & SORT LOGIC ---
+
     const handleSearch = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
         if (query.length > 1) {
-            // Use originalWorkouts for searching
-            // FIX 1: Add safety check for w and w.title
             const matches = originalWorkouts.filter(w =>
                 w && w.title && w.title.toLowerCase().includes(query.toLowerCase())
             );
@@ -123,9 +107,7 @@ const Workouts = () => {
         }
     };
 
-    // 1. Filtering - Use originalWorkouts as the source
     let filteredWorkouts = originalWorkouts.filter(workout => {
-        // FIX 2: Check if the workout object and its title exist before accessing properties
         if (!workout || !workout.title) return false;
 
         const matchesSearch = workout.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -133,10 +115,8 @@ const Workouts = () => {
         return matchesSearch && matchesCategory;
     });
 
-    // 2. Sorting
     const [key, direction] = sortCriteria.split('-');
     filteredWorkouts.sort((a, b) => {
-        // FIX 3: Add safety checks before accessing properties a and b for sorting
         if (!a || !b) return 0;
 
         let valA, valB;
@@ -146,9 +126,9 @@ const Workouts = () => {
         } else if (key === 'level') {
             valA = parseLevel(a.level);
             valB = parseLevel(b.level);
-        } else { // title
-            valA = a.title ? a.title.toLowerCase() : ''; // Safety check
-            valB = b.title ? b.title.toLowerCase() : ''; // Safety check
+        } else {
+            valA = a.title ? a.title.toLowerCase() : '';
+            valB = b.title ? b.title.toLowerCase() : '';
         }
 
         if (valA < valB) return direction === 'asc' ? -1 : 1;
@@ -158,44 +138,34 @@ const Workouts = () => {
 
     const displayedWorkouts = filteredWorkouts;
 
-    // --- UI HELPERS ---
-    // Handler for getting the indicator count (NOW USES FETCHED DATA)
     const getIndicatorCount = (id) => {
-        // Find the workout in the fetched data
         const workout = originalWorkouts.find(w => w.id === id);
-        // Return the length of the images array if it exists
         return workout && workout.images ? workout.images.length : 0;
     }
 
-
-    // Handler for updating the active dot when user scrolls the carousel
     const handleScroll = (id) => {
         const container = swiperRefs.current[id];
         if (container) {
             const scrollLeft = container.scrollLeft;
             const cardWidth = container.offsetWidth;
-            // Determine which slide is most visible
             const activeIndex = Math.round(scrollLeft / cardWidth);
             setActiveSlides(prev => ({ ...prev, [id]: activeIndex }));
         }
     };
 
-    // Handler for arrow click
     const scrollSwiper = (e, direction, id) => {
         const container = swiperRefs.current[id];
         if (container) {
             const scrollAmount = container.offsetWidth;
             container.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-            // Scroll event will automatically update setActiveSlides via the listener
         }
     };
 
     const openModal = (workout) => {
         setSelectedWorkout(workout);
-        setSuggestions([]); // Clear suggestions if open
+        setSuggestions([]);
     };
 
-    // --- UI RENDERING (Handle Loading/Errors) ---
     if (loading) {
         return <div className="loading-state" style={{ textAlign: 'center', padding: '100px', color: 'var(--primary)' }}>
             <FaDumbbell style={{ fontSize: '3rem', animation: 'spin 1s linear infinite' }} />

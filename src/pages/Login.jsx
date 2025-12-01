@@ -6,14 +6,11 @@ import { UserContext } from '../context/UserContext';
 
 import "../styles/Login.css";
 
-// Import Images
 import heroImage from '../assets/Running.jpg';
 import formBgImage from '../assets/gym.jpg';
 
-// Validation Schemas
 const LoginSchema = Yup.object().shape({
-    // FIX 1: Change validation to simply require a string, not an email format
-    email: Yup.string().required('Username is required'),
+    username: Yup.string().required('Username/Email is required'),
     password: Yup.string().required('Password is required'),
 });
 
@@ -33,12 +30,10 @@ const Login = () => {
     const navigate = useNavigate();
     const { login, signup } = useContext(UserContext);
 
-    // --- LOGIN LOGIC ---
     const handleLoginSubmit = async (values, { setSubmitting }) => {
         try {
             setServerError('');
-            // NOTE: The 'values.email' field contains the Username input value
-            const result = await login(values.email, values.password);
+            const result = await login(values.username, values.password);
 
             if (result.success) {
                 navigate('/dashboard');
@@ -52,7 +47,6 @@ const Login = () => {
         }
     };
 
-    // --- SIGNUP LOGIC ---
     const handleSignupSubmit = async (values, { setSubmitting }) => {
         try {
             setServerError('');
@@ -73,7 +67,7 @@ const Login = () => {
     return (
         <div className="login-container">
 
-            {/* LEFT SIDE: Hero Section */}
+            {/* LEFT SIDE: Hero Section (content omitted) */}
             <div
                 className="hero-section"
                 style={{
@@ -104,11 +98,9 @@ const Login = () => {
                         {isLogin ? 'Welcome Back' : 'Create Account'}
                     </h2>
 
-                    {/* Show Server Errors */}
                     {serverError && <div style={{ color: '#ff4d4d', marginBottom: '1rem', textAlign: 'center', background: 'rgba(255,0,0,0.1)', padding: '10px', borderRadius: '5px' }}>{serverError}</div>}
 
                     <Formik
-                        // FIX: Always initialize ALL fields to empty strings to prevent "uncontrolled input" warning
                         initialValues={{
                             username: '',
                             email: '',
@@ -117,10 +109,11 @@ const Login = () => {
                         }}
                         validationSchema={isLogin ? LoginSchema : SignupSchema}
                         onSubmit={isLogin ? handleLoginSubmit : handleSignupSubmit}
-                        enableReinitialize // Allows form to reset when switching modes
+                        enableReinitialize
                     >
                         {({ isSubmitting }) => (
                             <Form>
+                                {/* SIGNUP Username Field */}
                                 {!isLogin && (
                                     <div className="form-group">
                                         <label>Username</label>
@@ -129,16 +122,17 @@ const Login = () => {
                                     </div>
                                 )}
 
-                                {/* FIX 2: Change Login field UI from Email Address to Username */}
+                                {/* LOGIN/SIGNUP IDENTIFIER FIELD */}
                                 <div className="form-group">
-                                    <label>{isLogin ? 'Username' : 'Email Address'}</label>
+                                    {/* Updated Label */}
+                                    <label>{isLogin ? 'Username / Email' : 'Email Address'}</label>
                                     <Field
                                         type={isLogin ? 'text' : 'email'}
-                                        name="email"
+                                        name={isLogin ? 'username' : 'email'}
                                         className="custom-input"
-                                        placeholder={isLogin ? 'Enter your username' : 'name@example.com'}
+                                        placeholder={isLogin ? 'username or email address' : 'name@example.com'}
                                     />
-                                    <ErrorMessage name="email" component="div" className="error-msg" />
+                                    <ErrorMessage name={isLogin ? 'username' : 'email'} component="div" className="error-msg" />
                                 </div>
 
                                 <div className="form-group">
@@ -147,6 +141,7 @@ const Login = () => {
                                     <ErrorMessage name="password" component="div" className="error-msg" />
                                 </div>
 
+                                {/* CONFIRM PASSWORD FIELD (omitted for brevity) */}
                                 {!isLogin && (
                                     <div className="form-group">
                                         <label>Confirm Password</label>
@@ -168,7 +163,7 @@ const Login = () => {
                             className="toggle-link"
                             onClick={() => {
                                 setIsLogin(!isLogin);
-                                setServerError(''); // Clear errors when toggling
+                                setServerError('');
                             }}
                         >
                             {isLogin ? 'Sign Up' : 'Log In'}
