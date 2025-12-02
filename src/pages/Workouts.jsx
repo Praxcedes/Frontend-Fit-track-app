@@ -305,7 +305,7 @@ const Workouts = () => {
 
             </main>
 
-            {/* --- WORKOUT DETAIL MODAL --- */}
+            {/* WORKOUT DETAIL MODAL */}
             {selectedWorkout && (
                 <div className="workout-modal-overlay" onClick={() => setSelectedWorkout(null)}>
                     <div className="workout-modal-content" onClick={(e) => e.stopPropagation()}>

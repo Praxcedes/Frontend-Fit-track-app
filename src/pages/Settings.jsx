@@ -244,7 +244,7 @@ const Settings = () => {
                 <div className="settings-container">
                     <h1>Settings</h1>
 
-                    {/* --- 1. Account Management --- */}
+                    {/* 1. Account Management */}
                     <div className="settings-section">
                         <h2>Account Management</h2>
 
@@ -288,7 +288,7 @@ const Settings = () => {
                             </button>
                         </div>
 
-                        {/* Logout Button (ADDED) */}
+                        {/* Logout Button */}
                         <div className="setting-item">
                             <div className="setting-details">
                                 <FaSignOutAlt className="setting-icon" style={{ color: 'var(--primary-orange)' }} />
@@ -303,7 +303,7 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    {/* --- 2. App Preferences --- */}
+                    {/* 2. App Preferences */}
                     <div className="settings-section">
                         <h2>App Preferences</h2>
                         {/* Theme Toggle */}
@@ -341,7 +341,7 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    {/* --- 3. Social & Privacy --- */}
+                    {/* 3. Social & Privacy */}
                     <div className="settings-section">
                         <h2>Social & Privacy</h2>
 
@@ -366,7 +366,7 @@ const Settings = () => {
                         </div>
                     </div>
 
-                    {/* --- 4. About & Support --- */}
+                    {/* 4. About & Support */}
                     <div className="settings-section">
                         <h2>Support</h2>
 

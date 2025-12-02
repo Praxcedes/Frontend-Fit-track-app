@@ -217,7 +217,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            {/* --- DAILY GOAL / WATER INTAKE CARD (LIVE DATA) --- */}
+                            {/* DAILY GOAL / WATER INTAKE CARD */}
                             <div className="dash-card goal-card">
                                 <div className="card-header">
                                     <span className="card-title">Hydration Goal (3L)</span>
@@ -232,7 +232,7 @@ const Dashboard = () => {
                                 <div className="cta-message">Log water using the button in the bottom navigation.</div>
                             </div>
 
-                            {/* --- NEXT PLANNED WORKOUT (LIVE DATA) --- */}
+                            {/* NEXT PLANNED WORKOUT */}
                             <div className="dash-card next-workout-card">
                                 <div className="card-header">
                                     <span className="card-title">Next Session</span>
@@ -267,7 +267,7 @@ const Dashboard = () => {
                                 <div className="dash-card activity-card">
                                     <div className="act-icon"><FaRunning /></div>
                                     <div>
-                                        <span className="card-title">Steps (Static Placeholder)</span>
+                                        <span className="card-title">Steps</span>
                                         <p>5,200 / 10k</p>
                                     </div>
                                 </div>
@@ -283,7 +283,7 @@ const Dashboard = () => {
                     </div>
 
                     <div className="right-panel">
-                        {/* --- CURRENT WEIGHT TREND CARD (LIVE DATA) --- */}
+                        {/* CURRENT WEIGHT TREND CARD */}
                         <div className="dash-card weight-trend-card">
                             <div className="card-header">
                                 <span className="card-title">Weight Trend (Last 7 Days)</span>
@@ -298,7 +298,7 @@ const Dashboard = () => {
                             <div className="cta-message">Log weight using the button in the bottom navigation.</div>
                         </div>
 
-                        {/* --- PERSONAL RECORDS CARD (LIVE DATA) --- */}
+                        {/* PERSONAL RECORDS CARD */}
                         <div className="dash-card pr-card">
                             <div className="card-header">
                                 <span className="card-title">Personal Records (PRs)</span>

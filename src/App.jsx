@@ -58,13 +58,13 @@ function App() {
                             element={<ProtectedRoute><Workouts /></ProtectedRoute>}
                         />
 
-                        {/* Fallback for the detail view if user manually types url (optional) */}
+                        {/* Fallback for the detail view if user manually types url */}
                         <Route
                             path="/workouts/:id"
                             element={<ProtectedRoute><Workouts /></ProtectedRoute>}
                         />
 
-                        {/* --- NEW: ACTIVE WORKOUT SESSION --- */}
+                        {/* NEW: ACTIVE WORKOUT SESSION */}
                         <Route
                             path="/session/:id"
                             element={<ProtectedRoute><ActiveSession /></ProtectedRoute>}

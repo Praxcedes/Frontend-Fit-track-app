@@ -271,7 +271,7 @@ const ActiveSession = () => {
                             {isActive ? <FaPause /> : <FaPlay />}
                         </button>
 
-                        {/* ADVANCE BUTTON (Replaces Log Set) */}
+                        {/* ADVANCE BUTTON */}
                         <button
                             className="btn-control btn-complete"
                             onClick={handleManualAdvance}

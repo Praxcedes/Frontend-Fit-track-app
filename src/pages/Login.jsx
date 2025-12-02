@@ -67,7 +67,7 @@ const Login = () => {
     return (
         <div className="login-container">
 
-            {/* LEFT SIDE: Hero Section (content omitted) */}
+            {/* LEFT SIDE: Hero Section */}
             <div
                 className="hero-section"
                 style={{
@@ -141,7 +141,7 @@ const Login = () => {
                                     <ErrorMessage name="password" component="div" className="error-msg" />
                                 </div>
 
-                                {/* CONFIRM PASSWORD FIELD (omitted for brevity) */}
+                                {/* CONFIRM PASSWORD FIELD */}
                                 {!isLogin && (
                                     <div className="form-group">
                                         <label>Confirm Password</label>

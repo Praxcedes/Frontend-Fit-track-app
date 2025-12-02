@@ -108,7 +108,7 @@ const MyWorkouts = () => {
 
                 <h1 style={{ marginBottom: '3rem' }}>My Activity Log</h1>
 
-                {/* --- 1. SUMMARY STATS --- */}
+                {/* 1. SUMMARY STATS */}
                 <div className="log-summary-grid">
                     <div className="summary-card">
                         <div className="summary-value">
@@ -135,7 +135,7 @@ const MyWorkouts = () => {
                     </div>
                 </div>
 
-                {/* --- 2. FILTER & HEADER --- */}
+                {/* 2. FILTER & HEADER */}
                 <div className="log-filter-bar">
                     <h2>Session History</h2>
                     <div className="filter-controls">
@@ -148,7 +148,7 @@ const MyWorkouts = () => {
                     </div>
                 </div>
 
-                {/* --- 3. ACTIVITY LIST --- */}
+                {/* 3. ACTIVITY LIST */}
                 {filteredHistory.length > 0 ? (
                     <div className="activity-log-list">
                         {filteredHistory.map(session => (
