@@ -1,140 +1,96 @@
- 📘 Fit-Track: The Ultimate Workout Logger
+Fit Track Application:
+Fit Track is a full-stack fitness tracking application designed to help users organize their workout routines, log exercise metrics, and visualize their physical progress. The application utilizes a decoupled architecture with a RESTful Flask backend and a responsive React frontend.
 
-Fit-Track is a full-stack fitness tracking application designed to help users log, monitor, and analyze their daily workouts. It provides a clean, modern UI built with React, powered by a secure and efficient Python REST API backend.
+Project Overview:
+Fit Track addresses the need for a distraction-free workout logger. It allows users to create accounts, manage profiles, browse a pre-seeded library of exercises, log specific workout details (sets, reps, weights), and view dashboard analytics such as activity streaks and volume metrics.
 
-✨ Features
-1. User Account Management
+Features:
+1. User Authentication: Secure signup and login functionality using JWT (JSON Web Tokens).
+2. Interactive Dashboard: Visual overview of workout activity, calories burned, and activity streaks.
+3. Workout Management: Create custom workout routines and log specific exercises.
+4. Exercise Library: Browse exercises categorized by muscle group (e.g., Strength, Cardio, Flexibility).
+5. Metric Tracking: Log daily water intake and body weight.
+6. Profile Management: Update user details and account settings.
+7. Responsive UI: Optimized for both desktop and mobile web usage.
 
-🔐 Secure Authentication with email + password
+Technology Stack:
+1. Backend
+Language: Python 3.11+
+Framework: Flask
+ORM: SQLAlchemy (Flask-SQLAlchemy)
+Migrations: Flask-Migrate (Alembic)
+Authentication: Flask-JWT-Extended
+CORS: Flask-CORS
+Server: Gunicorn (Production)
 
-🔁 Session Persistence using JWT stored in Local Storage
+2. Frontend
+Library: React
+Build Tool: Vite
+HTTP Client: Axios
+State Management: React Context API
+Form Handling: Formik & Yup
+Styling: CSS3
 
-2. Workout Logging (CRUD)
+3. Database
+Local Development: SQLite
+Production: PostgreSQL
 
-➕ Add new workouts (Title, Date, Notes)
-
-📄 View detailed workout entries
-
-📚 List all workouts
-
-🔍 Search by title
-
-🗂 Sort workouts by date
-
-3. Exercise Tracking (Nested CRUD)
-
-➕ Add exercises to a specific workout
-
-✏️ Update exercise details: Name, Sets, Reps, Weight
-
-❌ Delete individual exercise entries
-
-4. Dashboard Overview
-
-📊 Summary of total workouts logged
-
-🕒 List of recent workouts
-
-💻 Technology Stack
-Component	Technology	Reasoning
-Frontend	React (Router + Hooks)	Fast, modern, reactive SPA interface
-Backend	Python (Flask / FastAPI)	Lightweight, fast REST API
-Database	PostgreSQL	Reliable relational data handling
-ORM	SQLAlchemy	Models: Users → Workouts → Exercises
-Auth	JWT	Secure and stateless authentication
-⚙️ Setup & Installation
 Prerequisites
+Ensure the following tools are installed on your system:
+1. Node.js (v16 or higher)
+2. npm (Node Package Manager)
+3. Python (v3.10 or higher)
+4. Git
 
-Python 3.8+
+Local Development Setup:
+1. Frontend:
+Clone the Repository
+git clone https://github.com/Praxcedes/Frontend-Fit-track-app.git
+cd Frontend-Fit-track-app
+    Install dependencies:
+        npm install
+        Start the Vite development server:
+        npm run dev
+        The frontend runs on http://localhost:5173
 
-Node.js 16+
+2. Backend
+Clone the Repository
+    git clone https://github.com/Praxcedes/Backend-Fit-track-app.git
+cd Backend-Fit-track-app
+Set up the Python environment
+    python -m venv venv
+Activate the virtual environment:
+    Windows: venv\Scripts\activate
+    MacOS/Linux: source venv/bin/activate
+Install dependencies:
+    pip install -r requirements.txt
 
-npm or yarn
+Initialize the local SQLite database:
+    cd server
+    flask db upgrade
+    python seed.py
+Start the local development server:
+    python app.py
+The backend runs on http://127.0.0.1:5555
 
-🟦 1. Backend Setup
-Clone the repository
-git clone [Your Repository URL]
-cd Fit-Track
+API Endpoints
+Authentication:
+POST /auth/signup - Register a new user.
 
-Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate       # Mac/Linux
-.\venv\Scripts\activate        # Windows
+POST /auth/login - Authenticate a user and receive an access token.
 
-Install dependencies
-pip install -r requirements.txt
+GET /auth/check_session - Validate the current session token.
 
-Set environment variables (example)
-export DATABASE_URI=postgresql://user:password@localhost:5432/fittrack
-export SECRET_KEY="your-secret-key"
-export FLASK_APP=app.py
+Workouts & Exercises:
+GET /exercises - Retrieve all available exercises.
 
-Run migrations
-flask db upgrade
+GET /workouts - Retrieve workout history for the authenticated user.
 
-Seed the database (optional)
-python seed.py
+POST /workouts - Log a new workout.
 
-Start the API server
-flask run
+Metrics:
+POST /metrics/log_water - Log water intake.
 
+POST /metrics/log_weight - Log body weight.
 
-API will run on:
-👉 http://127.0.0.1:5000
-
-🟧 2. Frontend Setup
-Navigate to the frontend folder
-cd src
-
-Install frontend dependencies
-npm install
-# or
-yarn install
-
-Start the React development server
-npm run dev
-
-
-Frontend will run on:
-👉 http://localhost:5173
-
-🗺️ API Endpoints
-
-All endpoints return JSON.
-Most require a Bearer Token (JWT) in the Authorization header.
-
-Auth
-Method	Endpoint	Description
-POST	/api/signup	Register a new user
-POST	/api/login	Log in and receive a JWT
-Workouts
-Method	Endpoint	Description
-GET	/api/workouts	Get all workouts for the logged-in user
-POST	/api/workouts	Create a new workout
-DELETE	/api/workouts/<id>	Delete a workout + its exercises
-Exercises
-Method	Endpoint	Description
-POST	/api/workouts/<id>/exercises	Add an exercise to a workout
-PUT	/api/exercises/<id>	Update an exercise
-🔮 Future Enhancements
-
-🏅 PR (Personal Record) Tracker
-
-📈 Progress Charts showing strength over time
-
-📝 Workout Templates for quick creation
-
-🕹 Drag-and-drop exercise planner
-
-👤 Profile settings & user goals
-
-If you'd like, I can also:
-
-✅ Add screenshots
-✅ Create a folder structure section
-✅ Auto-generate a requirements.txt
-✅ Add badges (e.g., Python, React, Flask, PostgreSQL, License)
-✅ Create a LICENSE file
-✅ Convert this into Notion/Wiki format
-
-Just tell me!
+GET /metrics/summary - Retrieve dashboard analytics.
