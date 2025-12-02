@@ -53,26 +53,6 @@ cd Frontend-Fit-track-app
         npm run dev
         The frontend runs on http://localhost:5173
 
-2. Backend
-Clone the Repository
-    git clone https://github.com/Praxcedes/Backend-Fit-track-app.git
-cd Backend-Fit-track-app
-Set up the Python environment
-    python -m venv venv
-Activate the virtual environment:
-    Windows: venv\Scripts\activate
-    MacOS/Linux: source venv/bin/activate
-Install dependencies:
-    pip install -r requirements.txt
-
-Initialize the local SQLite database:
-    cd server
-    flask db upgrade
-    python seed.py
-Start the local development server:
-    python app.py
-The backend runs on http://127.0.0.1:5555
-
 API Endpoints
 Authentication:
 POST /auth/signup - Register a new user.
