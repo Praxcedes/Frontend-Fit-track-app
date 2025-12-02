@@ -1,8 +1,7 @@
-// src/components/BottomNavbar.jsx
 import React, { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import api from '../services/api'; // ADDED: API service for metrics
+import api from '../services/api';
 import '../styles/Navbar.css';
 
 import {
@@ -16,11 +15,10 @@ const BottomNavbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // State
-    const [waterCount, setWaterCount] = useState(0); // Frontend counter (resets on refresh)
+    const [waterCount, setWaterCount] = useState(0);
     const [showWeightModal, setShowWeightModal] = useState(false);
     const [weightInput, setWeightInput] = useState('');
-    const [isSaving, setIsSaving] = useState(false); // New state to prevent double-submission
+    const [isSaving, setIsSaving] = useState(false);
 
     const isActive = (path) => location.pathname === path ? 'active' : '';
 
@@ -29,18 +27,15 @@ const BottomNavbar = () => {
         navigate('/');
     };
 
-    // --- UTILITY LOGIC: WATER ---
     const handleLogWater = async () => {
         if (isSaving) return;
 
-        // Log 250ml per tap
         const amount = 250;
 
         try {
             setIsSaving(true);
             const response = await api.post('/metrics/log_water', { amount_ml: amount });
 
-            // Optimistically update the local counter on success
             setWaterCount(c => c + 1);
             console.log("Water logged successfully:", response.data.log);
 
@@ -52,7 +47,6 @@ const BottomNavbar = () => {
         }
     };
 
-    // --- UTILITY LOGIC: WEIGHT ---
     const handleSaveWeight = async () => {
         const weightValue = parseFloat(weightInput);
         if (isNaN(weightValue) || weightValue <= 0) {
@@ -64,7 +58,7 @@ const BottomNavbar = () => {
 
         try {
             setIsSaving(true);
-            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const today = new Date().toISOString().split('T')[0];
 
             const response = await api.post('/metrics/log_weight', {
                 weight_kg: weightValue,

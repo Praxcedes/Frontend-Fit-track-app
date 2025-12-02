@@ -1,30 +1,25 @@
-// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 
-// Components
 import TopNavbar from './components/TopNavbar';
 import BottomNavbar from './components/BottomNavbar';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Pages
+
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Workouts from './pages/Workouts';
-import ActiveSession from './pages/ActiveSession'; // <--- NEW IMPORT
+import ActiveSession from './pages/ActiveSession';
 import MyWorkouts from './pages/MyWorkouts';
 import Friends from './pages/Friends';
 import Settings from './pages/Settings';
 
-// Styles
 import "./styles/Login.css";
 
 const Layout = ({ children }) => {
     const location = useLocation();
 
-    // LOGIC: Hide Navbars on Login ("/") AND Active Session ("/session/...")
-    // This creates "Focus Mode" for the actual workout
     const isSession = location.pathname.startsWith('/session');
     const isLogin = location.pathname === '/';
 
@@ -63,13 +58,13 @@ function App() {
                             element={<ProtectedRoute><Workouts /></ProtectedRoute>}
                         />
 
-                        {/* Fallback for the detail view if user manually types url (optional) */}
+                        {/* Fallback for the detail view if user manually types url */}
                         <Route
                             path="/workouts/:id"
                             element={<ProtectedRoute><Workouts /></ProtectedRoute>}
                         />
 
-                        {/* --- NEW: ACTIVE WORKOUT SESSION --- */}
+                        {/* NEW: ACTIVE WORKOUT SESSION */}
                         <Route
                             path="/session/:id"
                             element={<ProtectedRoute><ActiveSession /></ProtectedRoute>}

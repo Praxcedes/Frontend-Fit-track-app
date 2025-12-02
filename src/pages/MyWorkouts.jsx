@@ -1,4 +1,3 @@
-// src/pages/MyWorkouts.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -7,48 +6,35 @@ import '../styles/MyWorkouts.css';
 
 import { FaDumbbell, FaClock, FaCalendarCheck, FaChartLine, FaArrowRight, FaFilter, FaTrash } from 'react-icons/fa';
 
-// --- HELPER FUNCTIONS ---
-
-// Calculates the total duration of a single workout in minutes
 const calculateSessionDuration = (session) => {
-    // FIX: Use session.total_duration_minutes if the backend provides it.
-    // Otherwise, use a placeholder estimate based on status.
     if (session.total_duration_minutes) {
         return session.total_duration_minutes;
     }
     return session.status === 'completed' ? 30 : 10;
 };
 
-// Formats minutes into HHh MMm
 const formatDuration = (minutes) => {
     const h = Math.floor(minutes / 60);
     const m = Math.round(minutes % 60);
-    // FIX: Improved formatting logic to handle cases where time is less than an hour gracefully.
     if (h > 0) {
         return `${h}h ${m}m`;
     }
     return `${m} min`;
 };
 
-// --- COMPONENT START ---
 
 const MyWorkouts = () => {
     const navigate = useNavigate();
 
-    // --- STATE ---
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [fetchError, setFetchError] = useState(null);
     const [filterType, setFilterType] = useState('all');
 
-    // --- EFFECT 1: FETCH DATA ---
     const fetchHistory = async () => {
         try {
-            // FIX 1: The backend GET /workouts/ endpoint returns the list directly (not wrapped in .workouts)
             const response = await api.get('/workouts/');
 
-            // FIX 2: Check if response.data is an array or assume it's the list.
-            // Since we ensured the backend returns a list directly, use response.data.
             const workoutsList = Array.isArray(response.data) ? response.data : response.data.workouts || [];
 
             setHistory(workoutsList);
@@ -65,18 +51,15 @@ const MyWorkouts = () => {
         fetchHistory();
     }, []);
 
-    // --- ACTION: DELETE LOG ---
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to permanently delete this workout session?")) {
             return;
         }
 
         try {
-            // Call the DELETE /workouts/<id> endpoint we just implemented
             await api.delete(`/workouts/${id}`);
             alert("Workout deleted successfully!");
 
-            // Re-fetch data to update the list immediately
             fetchHistory();
         } catch (error) {
             console.error("Failed to delete workout:", error.response?.data);
@@ -84,7 +67,6 @@ const MyWorkouts = () => {
         }
     };
 
-    // --- Filtering Logic ---
     const filteredHistory = history.filter(session => {
         if (filterType === 'all') return true;
         if (filterType === 'completed' && session.status === 'completed') return true;
@@ -92,16 +74,13 @@ const MyWorkouts = () => {
         return false;
     });
 
-    // --- SUMMARY CALCULATIONS ---
     const totalWorkouts = history.length;
     const completedWorkouts = history.filter(s => s.status === "completed").length;
 
     const totalDurationMinutes = history.reduce((sum, s) => sum + calculateSessionDuration(s), 0);
     const totalDurationHours = (totalDurationMinutes / 60).toFixed(1);
 
-    // --- UI HELPERS ---
     const handleViewDetails = (id) => {
-        // FIX: Navigate to a dedicated detail page, using the ID for the GET /workouts/<id> call
         navigate(`/workout-detail/${id}`);
     };
 
@@ -109,7 +88,6 @@ const MyWorkouts = () => {
         setFilterType(e.target.value);
     };
 
-    // Handle Loading and Error states
     if (loading) {
         return <div className="loading-state" style={{ textAlign: 'center', padding: '100px', color: 'var(--primary)' }}>
             <FaDumbbell style={{ fontSize: '3rem', animation: 'spin 1s linear infinite' }} />
@@ -130,7 +108,7 @@ const MyWorkouts = () => {
 
                 <h1 style={{ marginBottom: '3rem' }}>My Activity Log</h1>
 
-                {/* --- 1. SUMMARY STATS --- */}
+                {/* 1. SUMMARY STATS */}
                 <div className="log-summary-grid">
                     <div className="summary-card">
                         <div className="summary-value">
@@ -157,7 +135,7 @@ const MyWorkouts = () => {
                     </div>
                 </div>
 
-                {/* --- 2. FILTER & HEADER --- */}
+                {/* 2. FILTER & HEADER */}
                 <div className="log-filter-bar">
                     <h2>Session History</h2>
                     <div className="filter-controls">
@@ -170,7 +148,7 @@ const MyWorkouts = () => {
                     </div>
                 </div>
 
-                {/* --- 3. ACTIVITY LIST --- */}
+                {/* 3. ACTIVITY LIST */}
                 {filteredHistory.length > 0 ? (
                     <div className="activity-log-list">
                         {filteredHistory.map(session => (
@@ -208,7 +186,7 @@ const MyWorkouts = () => {
                         ))}
                     </div>
                 ) : (
-                    // --- 4. EMPTY STATE ---
+
                     <div className="empty-log-state">
                         <h3 style={{ marginBottom: '15px' }}>
                             {history.length === 0 ? "No Workout History Found" : "No Sessions Match Filter"}

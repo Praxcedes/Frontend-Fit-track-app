@@ -1,16 +1,76 @@
-# React + Vite
+Fit Track Application:
+Fit Track is a full-stack fitness tracking application designed to help users organize their workout routines, log exercise metrics, and visualize their physical progress. The application utilizes a decoupled architecture with a RESTful Flask backend and a responsive React frontend.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Project Overview:
+Fit Track addresses the need for a distraction-free workout logger. It allows users to create accounts, manage profiles, browse a pre-seeded library of exercises, log specific workout details (sets, reps, weights), and view dashboard analytics such as activity streaks and volume metrics.
 
-Currently, two official plugins are available:
+Features:
+1. User Authentication: Secure signup and login functionality using JWT (JSON Web Tokens).
+2. Interactive Dashboard: Visual overview of workout activity, calories burned, and activity streaks.
+3. Workout Management: Create custom workout routines and log specific exercises.
+4. Exercise Library: Browse exercises categorized by muscle group (e.g., Strength, Cardio, Flexibility).
+5. Metric Tracking: Log daily water intake and body weight.
+6. Profile Management: Update user details and account settings.
+7. Responsive UI: Optimized for both desktop and mobile web usage.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Technology Stack:
+1. Backend
+Language: Python 3.11+
+Framework: Flask
+ORM: SQLAlchemy (Flask-SQLAlchemy)
+Migrations: Flask-Migrate (Alembic)
+Authentication: Flask-JWT-Extended
+CORS: Flask-CORS
+Server: Gunicorn (Production)
 
-## React Compiler
+2. Frontend
+Library: React
+Build Tool: Vite
+HTTP Client: Axios
+State Management: React Context API
+Form Handling: Formik & Yup
+Styling: CSS3
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+3. Database
+Local Development: SQLite
+Production: PostgreSQL
 
-## Expanding the ESLint configuration
+Prerequisites
+Ensure the following tools are installed on your system:
+1. Node.js (v16 or higher)
+2. npm (Node Package Manager)
+3. Python (v3.10 or higher)
+4. Git
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Local Development Setup:
+1. Frontend:
+Clone the Repository
+git clone https://github.com/Praxcedes/Frontend-Fit-track-app.git
+cd Frontend-Fit-track-app
+    Install dependencies:
+        npm install
+        Start the Vite development server:
+        npm run dev
+        The frontend runs on http://localhost:5173
+
+API Endpoints
+Authentication:
+POST /auth/signup - Register a new user.
+
+POST /auth/login - Authenticate a user and receive an access token.
+
+GET /auth/check_session - Validate the current session token.
+
+Workouts & Exercises:
+GET /exercises - Retrieve all available exercises.
+
+GET /workouts - Retrieve workout history for the authenticated user.
+
+POST /workouts - Log a new workout.
+
+Metrics:
+POST /metrics/log_water - Log water intake.
+
+POST /metrics/log_weight - Log body weight.
+
+GET /metrics/summary - Retrieve dashboard analytics.

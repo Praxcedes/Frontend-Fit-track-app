@@ -1,7 +1,5 @@
-/* src/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
-/* --- 1. GLOBAL BOX SIZING RESET (Crucial Fix) --- */
 *,
 *::before,
 *::after {
@@ -25,10 +23,8 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  /* Changed from min-width: 100vw to avoid scrollbar issues */
   min-height: 100vh;
   overflow-x: hidden;
-  /* Prevents horizontal scroll if something slips */
 }
 
 #root {

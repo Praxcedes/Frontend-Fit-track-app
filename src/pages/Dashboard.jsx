@@ -1,5 +1,4 @@
-// src/pages/Dashboard.jsx
-import React, { useContext, useState, useEffect, useCallback } from 'react'; // ADDED useCallback
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import api from '../services/api';
@@ -7,10 +6,8 @@ import Sidebar from '../components/TopNavbar';
 import MapComponent from '../components/MapComponent';
 import '../styles/Dashboard.css';
 
-// Icons
 import { FaBell, FaRunning, FaFire, FaTimes, FaGlassWhiskey, FaDumbbell, FaChartLine, FaArrowRight, FaWeightHanging } from 'react-icons/fa';
 
-// --- HELPER FUNCTIONS ---
 const calculateWorkoutDuration = (session) => {
     if (session.status === 'completed') return 30;
     if (session.status === 'quit') return 10;
@@ -43,14 +40,10 @@ const Dashboard = () => {
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const navigate = useNavigate();
 
-    // --- DATA FETCHING FUNCTIONS ---
-
-    // Fetch metrics summary (Water, Weight, PRs)
     const fetchUserMetrics = useCallback(async () => {
         if (!user) return;
         setMetricsLoading(true);
         try {
-            // Hitting the new GET /metrics/summary endpoint
             const response = await api.get('/metrics/summary');
             setMetrics(response.data);
         } catch (error) {
@@ -60,7 +53,6 @@ const Dashboard = () => {
         }
     }, [user]);
 
-    // Fetch Workout History
     const fetchWorkouts = useCallback(async () => {
         if (!user) return;
         setWorkoutsLoading(true);
@@ -76,15 +68,13 @@ const Dashboard = () => {
     }, [user]);
 
 
-    // --- EFFECT: INITIAL FETCH ---
     useEffect(() => {
         if (user && !loading) {
             fetchWorkouts();
-            fetchUserMetrics(); // Call the live metrics fetch function
+            fetchUserMetrics();
         }
-    }, [user, loading, fetchWorkouts, fetchUserMetrics]); // Dependencies added
+    }, [user, loading, fetchWorkouts, fetchUserMetrics]);
 
-    // --- SUMMARY CALCULATIONS ---
     const totalWorkouts = workouts.length;
     const totalCalories = workouts.reduce((sum, w) => sum + calculateCalories(w), 0);
     const totalTimeMinutes = workouts.reduce((sum, w) => sum + calculateWorkoutDuration(w), 0);
@@ -96,12 +86,9 @@ const Dashboard = () => {
     const uniqueCompletedDays = new Set(workoutDates).size;
     const streak = uniqueCompletedDays;
 
-    // Water goal calculation (Uses live metrics.waterIntake)
     const waterProgress = Math.min(100, (metrics.waterIntake / WATER_GOAL_ML) * 100);
-    // Convert ML to a time-like format (e.g., 1000ml = 60 minutes) for the existing formatDuration helper
     const waterTimeFormatted = formatDuration(metrics.waterIntake / 1000 * 60);
 
-    // --- UI RENDERING ---
 
     if (loading || workoutsLoading || metricsLoading) return <div className="loading-screen" style={{ textAlign: 'center', padding: '100px', color: 'var(--primary)' }}>
         <FaDumbbell style={{ fontSize: '3rem', animation: 'spin 1s linear infinite' }} />
@@ -136,12 +123,10 @@ const Dashboard = () => {
         </div>
     );
 
-    // --- Weight Trend Visualization (Uses fetched weightHistory) ---
     const renderWeightTrend = () => {
         const history = metrics.weightHistory.map(log => log.weight_kg);
 
         if (history.length < 2) {
-            // Default flat line if not enough data for a trend (to prevent chart error)
             const defaultPoints = "0,40 100,40";
             return <svg viewBox="0 0 100 40" className="chart-line"><polyline fill="none" stroke="#666" strokeWidth="1.5" points={defaultPoints} /></svg>;
         }
@@ -164,7 +149,6 @@ const Dashboard = () => {
     };
 
     const latestWeight = metrics.latestWeight;
-    // Determine trend by comparing latest weight to the oldest weight in the history
     const isLosingWeight = metrics.weightHistory.length > 1 && latestWeight < metrics.weightHistory[0].weight_kg;
     const weightTrendMessage = latestWeight ? (isLosingWeight ? "Great momentum! Keep it up." : "Weight stable. Log your next weight!") : "No weight data logged yet.";
 
@@ -233,7 +217,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
 
-                            {/* --- DAILY GOAL / WATER INTAKE CARD (LIVE DATA) --- */}
+                            {/* DAILY GOAL / WATER INTAKE CARD */}
                             <div className="dash-card goal-card">
                                 <div className="card-header">
                                     <span className="card-title">Hydration Goal (3L)</span>
@@ -248,7 +232,7 @@ const Dashboard = () => {
                                 <div className="cta-message">Log water using the button in the bottom navigation.</div>
                             </div>
 
-                            {/* --- NEXT PLANNED WORKOUT (LIVE DATA) --- */}
+                            {/* NEXT PLANNED WORKOUT */}
                             <div className="dash-card next-workout-card">
                                 <div className="card-header">
                                     <span className="card-title">Next Session</span>
@@ -283,7 +267,7 @@ const Dashboard = () => {
                                 <div className="dash-card activity-card">
                                     <div className="act-icon"><FaRunning /></div>
                                     <div>
-                                        <span className="card-title">Steps (Static Placeholder)</span>
+                                        <span className="card-title">Steps</span>
                                         <p>5,200 / 10k</p>
                                     </div>
                                 </div>
@@ -299,7 +283,7 @@ const Dashboard = () => {
                     </div>
 
                     <div className="right-panel">
-                        {/* --- CURRENT WEIGHT TREND CARD (LIVE DATA) --- */}
+                        {/* CURRENT WEIGHT TREND CARD */}
                         <div className="dash-card weight-trend-card">
                             <div className="card-header">
                                 <span className="card-title">Weight Trend (Last 7 Days)</span>
@@ -314,7 +298,7 @@ const Dashboard = () => {
                             <div className="cta-message">Log weight using the button in the bottom navigation.</div>
                         </div>
 
-                        {/* --- PERSONAL RECORDS CARD (LIVE DATA) --- */}
+                        {/* PERSONAL RECORDS CARD */}
                         <div className="dash-card pr-card">
                             <div className="card-header">
                                 <span className="card-title">Personal Records (PRs)</span>
